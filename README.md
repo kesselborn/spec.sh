@@ -1,6 +1,6 @@
 # bashspec
 
-A mini bash test framework that uses go test output
+A mini bash test framework that produces `go test` compatible output
 
 # usage
 
