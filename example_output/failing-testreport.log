@@ -1,0 +1,118 @@
+=== RUN it_should_execute_command
+--- FAIL: it_should_execute_command (1.00s)
+	+ it_should_execute_command
+	+ assert 'ls /xxxtmp'
+	+ result='ls /xxxtmp'
+	+ expected=
+	+ description=
+	+ '[' -z '' ']'
+	+ ls /xxxtmp
+	ls: /xxxtmp: No such file or directory
+	+ result=1
+	+ expected=0
+	+ description='expecting command '\''ls /xxxtmp'\'' to succeed'
+	+ '[' 1 '!=' 0 ']'
+	+ '[' -n 'expecting command '\''ls /xxxtmp'\'' to succeed' ']'
+	+ echo -e '\033[1;38;40mexpecting command '\''ls /xxxtmp'\'' to succeed\033[m'
+	[1;38;40mexpecting command 'ls /xxxtmp' to succeed[m
+	+ echo -e 'error: in test it_should_execute_command \033[1;38;40mexpected '\''1'\'' to be '\''0'\''\033[m'
+	error: in test it_should_execute_command [1;38;40mexpected '1' to be '0'[m
+	+ exit 1
+	error code: 1
+error occured in it_should_execute_command
+=== RUN it_should_match_exit_code
+--- FAIL: it_should_match_exit_code (0.00s)
+	+ it_should_match_exit_code
+	+ false
+	+ assert 0 0
+	+ result=0
+	+ expected=0
+	+ description=
+	+ '[' -z 0 ']'
+	+ '[' 0 '!=' 0 ']'
+	+ set +x
+	######################################## PASSED TEST: 0 == 0 
+	+ assert 0 0 '0 should be 0'
+	+ result=0
+	+ expected=0
+	+ description='0 should be 0'
+	+ '[' -z 0 ']'
+	+ '[' 0 '!=' 0 ']'
+	+ set +x
+	######################################## PASSED TEST: 0 should be 0 
+	+ assert 0 2
+	+ result=0
+	+ expected=2
+	+ description=
+	+ '[' -z 2 ']'
+	+ '[' 0 '!=' 2 ']'
+	+ '[' -n '' ']'
+	+ echo -e 'error: in test it_should_match_exit_code \033[1;38;40mexpected '\''0'\'' to be '\''2'\''\033[m'
+	error: in test it_should_match_exit_code [1;38;40mexpected '0' to be '2'[m
+	+ exit 1
+	error code: 1
+error occured in it_should_match_exit_code
+=== RUN it_should_match_regexp
+--- FAIL: it_should_match_regexp (0.00s)
+	+ it_should_match_regexp
+	+ assert~ aaa:88X09 'aaa:[0-9]{5}'
+	+ echo aaa:88X09
+	+ grep -E -m1 -o 'aaa:[0-9]{5}'
+	+ head -n1
+	+ grep -E 'aaa:[0-9]{5}'
+	+ assert 0 1 'checking '\''aaa:88X09'\'' to match '\''aaa:[0-9]{5}'\'''
+	+ result=0
+	+ expected=1
+	+ description='checking '\''aaa:88X09'\'' to match '\''aaa:[0-9]{5}'\'''
+	+ '[' -z 1 ']'
+	+ '[' 0 '!=' 1 ']'
+	+ '[' -n 'checking '\''aaa:88X09'\'' to match '\''aaa:[0-9]{5}'\''' ']'
+	+ echo -e '\033[1;38;40mchecking '\''aaa:88X09'\'' to match '\''aaa:[0-9]{5}'\''\033[m'
+	[1;38;40mchecking 'aaa:88X09' to match 'aaa:[0-9]{5}'[m
+	+ echo -e 'error: in test it_should_match_regexp \033[1;38;40mexpected '\''0'\'' to be '\''1'\''\033[m'
+	error: in test it_should_match_regexp [1;38;40mexpected '0' to be '1'[m
+	+ exit 1
+	error code: 1
+error occured in it_should_match_regexp
+=== RUN it_should_match_string
+--- FAIL: it_should_match_string (0.00s)
+	+ it_should_match_string
+	++ echo hallo
+	++ tr l x
+	+ assert haxxo haggo
+	+ result=haxxo
+	+ expected=haggo
+	+ description=
+	+ '[' -z haggo ']'
+	+ '[' haxxo '!=' haggo ']'
+	+ '[' -n '' ']'
+	+ echo -e 'error: in test it_should_match_string \033[1;38;40mexpected '\''haxxo'\'' to be '\''haggo'\''\033[m'
+	error: in test it_should_match_string [1;38;40mexpected 'haxxo' to be 'haggo'[m
+	+ exit 1
+	error code: 1
+error occured in it_should_match_string
+=== RUN it_should_match_string_with_description
+--- FAIL: it_should_match_string_with_description (0.00s)
+	+ it_should_match_string_with_description
+	++ echo hallo
+	++ tr l x
+	+ assert haxxo haggo 'transforming string should work'
+	+ result=haxxo
+	+ expected=haggo
+	+ description='transforming string should work'
+	+ '[' -z haggo ']'
+	+ '[' haxxo '!=' haggo ']'
+	+ '[' -n 'transforming string should work' ']'
+	+ echo -e '\033[1;38;40mtransforming string should work\033[m'
+	[1;38;40mtransforming string should work[m
+	+ echo -e 'error: in test it_should_match_string_with_description \033[1;38;40mexpected '\''haxxo'\'' to be '\''haggo'\''\033[m'
+	error: in test it_should_match_string_with_description [1;38;40mexpected 'haxxo' to be 'haggo'[m
+	+ exit 1
+	error code: 1
+error occured in it_should_match_string_with_description
+=== RUN it_should_reflect_exit_code
+--- FAIL: it_should_reflect_exit_code (0.00s)
+	+ it_should_reflect_exit_code
+	+ return 3
+	error code: 3
+error occured in it_should_reflect_exit_code
