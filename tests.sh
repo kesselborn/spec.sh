@@ -39,7 +39,7 @@ it_should_match_string() {
 }
 
 it_should_match_string_with_description() {
-  # pass an optional description as a third argument ... helpful when on test has many asserts
+  # pass an optional description as a third argument ... helpful when a test function has many asserts
   assert "$(echo 'hallo' | tr 'l' 'x')" "haxxo" "transforming string should work"
 }
 
@@ -49,6 +49,7 @@ it_should_match_regexp() {
 }
 
 it_should_be_possible_to_skip_a_test() {
+  # you can skip a test ... it will be marked as skipped in the test output
   SKIP_TEST
 }
 
