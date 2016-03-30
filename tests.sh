@@ -3,7 +3,7 @@
 source bashspec.sh
 
 # you can put tests in other files, just source them
-# source test_*.sh
+# for f in test_*.sh; do source $f; done
 
 # execute commands before running any test
 before_all() {
