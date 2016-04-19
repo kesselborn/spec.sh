@@ -8,11 +8,13 @@
 # language governing permissions and limitations under the License.
 
 
-# This is a mini bash test framework that outputs the test like go test does
+# This is a mini shell test framework that outputs the test like go test does
 # For usage see files tests.sh and failing-tests.sh and execute them to see
-# bashspec in action
+# spec.sh in action
 
-function run_test() {
+test ! -t || IS_TTY=true
+
+run_test() {
   local function=$1
 
   echo "=== RUN ${function}"
@@ -35,20 +37,19 @@ function run_test() {
     cat /tmp/${function}.testlog | sed 's/^/	/g'
     printf "\terror code: %d\n" ${result}
     echo "error occured in ${function}"
-    compgen -A function | grep -o after_all && after_all
   fi
 }
 
-function SKIP_TEST() {
+SKIP_TEST() {
   exit 255
 }
 
-function assert~() {
+assert_match() {
   echo $1 | grep -E -m1 -o "$2" | head -n1 | grep -E "$2"
   assert 0 $? "checking '$1' to match '$2'"
 }
 
-function assert() {
+assert() {
   result=$1
   expected=$2
   description=$3
@@ -66,9 +67,9 @@ function assert() {
   then
     if [ -n "${description}" ]
     then
-      echo -e "\033[1;38;40m${description}\033[m"
+      echo -e "${IS_TTY:+\033[1;38;40m}${description}${IS_TTY:+\033[m}"
     fi
-    echo -e "error: in test ${current_test} \033[1;38;40mexpected '${result}' to be '${expected}'\033[m"
+    echo -e "error: in test ${current_test} ${IS_TTY:+\033[1;38;40}mexpected '${result}' to be '${expected}'${IS_TTY:+\033[m}"
     exit 1
   else
     set +x
@@ -77,15 +78,23 @@ function assert() {
   fi
 }
 
-function run_tests() {
+include() {
+  __FILES="${__FILES} $1"
+  source $1
+}
+
+
+run_tests() {
+  functions=$(grep -ho "^it_should[a-zA-Z_]*" $0 ${__FILES})
+
   # call setup function if present
-  function_list=$(compgen -A function | grep -o before_all)
+  function_list=$(echo "${functions}" | grep -o before_all)
 
   # add all functions starting with 'it_' to  the function list
-  function_list="${function_list} $(compgen -A function | grep "^it_" | grep "${TESTS:-.}")"
+  function_list="${function_list} $(echo "${functions}" | grep "^it_" | grep "${TESTS:-.}")"
 
   # call tear down function if present
-  function_list="${function_list} $(compgen -A function | grep -o after_all)"
+  function_list="${function_list} $(echo "${functions}" | grep -o after_all)"
 
   for f in ${function_list}
   do

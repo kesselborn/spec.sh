@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-source bashspec.sh
+source spec.sh
 
 it_should_execute_command() {
   # assert with one argument will execute the string and pass if the result is 0
@@ -31,8 +31,8 @@ it_should_match_string_with_description() {
 }
 
 it_should_match_regexp() {
-  # use 'assert~' to match against an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
-  assert~ "aaa:88X09" "aaa:[0-9]{5}"
+  # use 'assert_match' to match against an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
+  assert_match "aaa:88X09" "aaa:[0-9]{5}"
 }
 
 run_tests

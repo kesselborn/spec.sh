@@ -1,9 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
-source bashspec.sh
+source spec.sh
+include external-test.sh
 
-# you can put tests in other files, just source them
-# for f in test_*.sh; do source $f; done
+# you can put tests in other files, just include them
+# for f in test_*.sh; do include $f; done
 
 # execute commands before running any test
 before_all() {
@@ -44,8 +45,8 @@ it_should_match_string_with_description() {
 }
 
 it_should_match_regexp() {
-  # use 'assert~' to match against an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
-  assert~ "aaa:88909" "aaa:[0-9]{5}"
+  # use 'assert_match' to match against an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
+  assert_match "aaa:88909" "aaa:[0-9]{5}"
 }
 
 it_should_be_possible_to_skip_a_test() {
