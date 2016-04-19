@@ -85,7 +85,7 @@ include() {
 
 
 run_tests() {
-  functions=$(grep -ho "^it_should[a-zA-Z_]*" $0 ${__FILES})
+  functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__FILES})
 
   # call setup function if present
   function_list=$(echo "${functions}" | grep -o before_all)
