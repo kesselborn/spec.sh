@@ -10,12 +10,14 @@
 	+ description='expecting command '\''ls /xxxtmp'\'' to succeed'
 	+ set +x
 	failed expectation: [1;38;40mexpecting command 'ls /xxxtmp' to succeed ('1' == '0') [m
+	duration 0.00
 	error code: 1
 	error occured in [1;38;40mit_should_execute_command[m
 === RUN it_should_reflect_exit_code
 --- FAIL: it_should_reflect_exit_code (0.00s)
 	+ it_should_reflect_exit_code
 	+ return 3
+	duration 0.00
 	error code: 3
 	error occured in [1;38;40mit_should_reflect_exit_code[m
 === RUN it_should_match_exit_code
@@ -43,6 +45,7 @@
 	+ description=
 	+ set +x
 	failed expectation: [1;38;40m'0' == '2' [m
+	duration 0.00
 	error code: 1
 	error occured in [1;38;40mit_should_match_exit_code[m
 === RUN it_should_match_string
@@ -57,6 +60,7 @@
 	+ description=
 	+ set +x
 	failed expectation: [1;38;40m'haxxo' == 'haggo' [m
+	duration 0.00
 	error code: 1
 	error occured in [1;38;40mit_should_match_string[m
 === RUN it_should_match_string_with_description
@@ -71,11 +75,13 @@
 	+ description='transforming string should work'
 	+ set +x
 	failed expectation: [1;38;40mtransforming string should work ('haxxo' == 'haggo') [m
+	duration 0.00
 	error code: 1
 	error occured in [1;38;40mit_should_match_string_with_description[m
 === RUN it_should_match_regexp
---- FAIL: it_should_match_regexp (0.00s)
+--- FAIL: it_should_match_regexp (0.31s)
 	+ it_should_match_regexp
+	+ sleep 0.3
 	+ assert_match aaa:88X09 'aaa:[0-9]{5}'
 	+ printf aaa:88X09
 	+ grep -E -m1 -o 'aaa:[0-9]{5}'
@@ -88,5 +94,6 @@
 	+ description='checking '\''aaa:88X09'\'' to match /aaa:[0-9]{5}/'
 	+ set +x
 	failed expectation: [1;38;40mchecking 'aaa:88X09' to match /aaa:[0-9]{5}/ ('1' == '0') [m
+	duration 0.31
 	error code: 1
 	error occured in [1;38;40mit_should_match_regexp[m

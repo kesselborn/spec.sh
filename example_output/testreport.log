@@ -1,7 +1,7 @@
 === RUN before_all
 --- PASS: before_all (0.00s)
 === RUN it_should_execute_command
---- PASS: it_should_execute_command (0.00s)
+--- PASS: it_should_execute_command (0.21s)
 === RUN it_should_match_exit_code
 --- PASS: it_should_match_exit_code (0.00s)
 === RUN it_should_match_string
