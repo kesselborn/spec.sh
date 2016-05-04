@@ -13,6 +13,7 @@
 
 test ! -t || IS_TTY=true
 failed_tests_cnt=0
+set -o pipefail
 
 # use 'include <file>' to split tests over several files
 include() {
@@ -39,10 +40,10 @@ run_test() {
   local log=$(mktemp)
 
   # this is the only dash compatible way to get sub-second time I found
-  (mkfifo ${log}.sync; time -p cat ${log}.sync) 2>&1 | grep real | sed 's/real/duration/' >> ${log} &
+  (mkfifo ${log}.sync; time -p cat ${log}.sync) 2>&1 | grep real | sed 's/real/	duration/' >> ${log} &
   printf "=== RUN ${function}\n"
-  test -n "${VERBOSE}" && ( set -x; ${function} ) 2>&1 | tee ${log} \
-                       || ( set -x; ${function} ) &>         ${log}
+  test -n "${VERBOSE}" && ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' | tee ${log} \
+                       || ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' >     ${log}
   result=$?
   printf "" > ${log}.sync && rm ${log}.sync
 
@@ -54,7 +55,7 @@ run_test() {
     printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration}
   else
     printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration}
-    cat ${log} | sed 's/^/	/g'
+    test -n "${VERBOSE}" || cat ${log}
     printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40}m%s${IS_TTY:+\033[m}\n" ${result} "${function}"
     let "failed_tests_cnt++"
   fi
