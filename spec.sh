@@ -12,88 +12,83 @@
 # spec.sh in action
 
 test ! -t || IS_TTY=true
+failed_tests_cnt=0
+
+# use 'include <file>' to split tests over several files
+include() {
+  __SPEC_SH_INCLUDES="${__SPEC_SH_INCLUDES} $1"
+  source $1
+}
+
+# run the tests
+run_tests() {
+  local functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
+
+  for f in $(printf "${functions}" | grep -o "before_all") \
+           $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
+           $(printf "${functions}" | grep -o "after_all")
+  do
+    run_test $f
+  done
+
+  exit ${failed_tests_cnt}
+}
 
 run_test() {
   local function=$1
+  local log=$(mktemp)
 
   printf "=== RUN ${function}\n"
   local start=$(date "+%s")
-  test -n "${VERBOSE}" && ( set -x; ${function} ) 2>&1 | tee /tmp/${function}.testlog || ( set -x; ${function} ) &> /tmp/${function}.testlog
+  test -n "${VERBOSE}" && ( set -x; ${function} ) 2>&1 | tee ${log} \
+                       || ( set -x; ${function} ) &>         ${log}
   result=$?
 
-  if [ ${result} -eq 0 ]
-  then
+  if [ ${result} -eq 0 ]; then
     printf -- "--- PASS: %s (%.2fs)\n" ${function} $(( $(date "+%s") - ${start} ))
-  elif [ ${result} -eq 255 ]
-  then
+  elif [ ${result} -eq 222 ]; then
     printf -- "--- SKIP: %s (%.2fs)\n" ${function} $(( $(date "+%s") - ${start} ))
   else
     printf -- "--- FAIL: %s (%.2fs)\n" ${function} $(( $(date "+%s") - ${start} ))
-    cat /tmp/${function}.testlog | sed 's/^/	/g'
-    printf "\terror code: %d\n" ${result}
-    printf "error occured in ${function}\n"
+    cat ${log} | sed 's/^/	/g'
+    printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40}m%s${IS_TTY:+\033[m}\n" ${result} "${function}"
+    let "failed_tests_cnt++"
   fi
+  rm ${log}
 }
 
 SKIP_TEST() {
-  exit 255
+  exit 222
 }
 
 assert_match() {
   printf "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2"
-  assert 0 $? "checking '$1' to match '$2'"
+  assert $? 0 "checking '$1' to match /$2/"
 }
 
+# two possible ways to call:
+# assert "<command that should succeed>"
+# assert "<got>" "<expected>" ["<description>"]
 assert() {
-  result=$1
-  expected=$2
-  description=$3
-
-  # we just want a command to succeed
-  if [ -z "${expected}" ]
-  then
-    ${result}
-    result=$?
+  if [ -z "$2" ]; then
+    $1 # execute first parameter
+    got=$?
     expected=0
     description="expecting command '$1' to succeed"
-  fi
-
-  if [ "${result}" != "${expected}" ]
-  then
-    if [ -n "${description}" ]
-    then
-      printf "${IS_TTY:+\033[1;38;40m}${description}${IS_TTY:+\033[m}\n"
-    fi
-    printf "error: in test ${current_test} ${IS_TTY:+\033[1;38;40}mexpected '${result}' to be '${expected}'${IS_TTY:+\033[m}\n"
-    exit 1
   else
-    set +x
-    printf "######################################## PASSED TEST: ${description:-${result} == ${expected}} \n"
-    set -x
+    got=$1
+    expected=$2
+    description=$3
   fi
+
+  (set +x
+    description="${description}${description:+ (}'${got}' == '${expected}'${description:+)}"
+    if [ "${got}" != "${expected}" ]; then
+      printf "failed expectation: ${IS_TTY:+\033[1;38;40}m${description} ${IS_TTY:+\033[m}\n"
+      exit 1
+    else
+      printf "######################################## PASSED TEST: ${description} \n"
+    fi
+  )
 }
 
-include() {
-  __FILES="${__FILES} $1"
-  source $1
-}
-
-
-run_tests() {
-  functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__FILES})
-
-  # call setup function if present
-  function_list=$(printf "${functions}" | grep -o before_all)
-
-  # add all functions starting with 'it_' to  the function list
-  function_list="${function_list} $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}")"
-
-  # call tear down function if present
-  function_list="${function_list} $(printf "${functions}" | grep -o after_all)"
-
-  for f in ${function_list}
-  do
-    current_test=$f
-    run_test $f
-  done
-}

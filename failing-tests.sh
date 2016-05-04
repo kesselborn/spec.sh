@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# the exit code will be equal to the number of failed tests
+
 source spec.sh
 
 it_should_execute_command() {
