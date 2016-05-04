@@ -42,8 +42,8 @@ run_test() {
   # this is the only dash compatible way to get sub-second time I found
   (mkfifo ${log}.sync; time -p cat ${log}.sync) 2>&1 | grep real | sed 's/real/	duration/' >> ${log} &
   printf "=== RUN ${function}\n"
-  test -n "${VERBOSE}" && ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' | tee ${log} \
-                       || ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' >     ${log}
+  test "${VERBOSE}" = "1" && ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' | tee ${log} \
+                          || ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' >     ${log}
   result=$?
   printf "" > ${log}.sync && rm ${log}.sync
 
@@ -55,7 +55,7 @@ run_test() {
     printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration}
   else
     printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration}
-    test -n "${VERBOSE}" || cat ${log}
+    test "${VERBOSE}" = "1" || cat ${log}
     printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40}m%s${IS_TTY:+\033[m}\n" ${result} "${function}"
     let "failed_tests_cnt++"
   fi
