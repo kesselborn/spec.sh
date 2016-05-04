@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# if you just want to execute some specific tests, set the TESTS env var to an _extended_ regexp:
+# if you just want to execute some specific tests, set the TESTS env var to an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
 #
-#     # execute test that matches exactly "it_should_match_string" and all tests that contain "it_should_execute_external_tests)"
-#     TESTS="(^it_should_match_string$|it_should_execute_external_tests)" ./tests.sh
+#     # execute tests that matches exactly "it_should_match_string" or match the substring "execute_external_tests"
+#     TESTS="(^it_should_match_string$|execute_external_tests)" ./tests.sh
 #
 #     # execute all tests that contain the word "string" in their name
 #     TESTS="string" ./tests.sh
