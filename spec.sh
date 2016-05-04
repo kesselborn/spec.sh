@@ -7,7 +7,6 @@
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-
 # This is a mini shell test framework that outputs the test like go test does
 # For usage see files tests.sh and failing-tests.sh and execute them to see
 # spec.sh in action
@@ -91,7 +90,7 @@ run_tests() {
   function_list=$(echo "${functions}" | grep -o before_all)
 
   # add all functions starting with 'it_' to  the function list
-  function_list="${function_list} $(echo "${functions}" | grep "^it_" | grep "${TESTS:-.}")"
+  function_list="${function_list} $(echo "${functions}" | grep "^it_" | grep -E "${TESTS:-.}")"
 
   # call tear down function if present
   function_list="${function_list} $(echo "${functions}" | grep -o after_all)"
