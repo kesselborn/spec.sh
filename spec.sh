@@ -38,18 +38,22 @@ run_test() {
   local function=$1
   local log=$(mktemp)
 
+  # this is the only dash compatible way to get sub-second time I found
+  (mkfifo ${log}.sync; time -p cat ${log}.sync) 2>&1 | grep real | sed 's/real/duration/' >> ${log} &
   printf "=== RUN ${function}\n"
-  local start=$(date "+%s")
   test -n "${VERBOSE}" && ( set -x; ${function} ) 2>&1 | tee ${log} \
                        || ( set -x; ${function} ) &>         ${log}
   result=$?
+  printf "" > ${log}.sync && rm ${log}.sync
+
+  duration=$(tail -n1 ${log} | grep duration | cut -f2 -d" ")
 
   if [ ${result} -eq 0 ]; then
-    printf -- "--- PASS: %s (%.2fs)\n" ${function} $(( $(date "+%s") - ${start} ))
+    printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration}
   elif [ ${result} -eq 222 ]; then
-    printf -- "--- SKIP: %s (%.2fs)\n" ${function} $(( $(date "+%s") - ${start} ))
+    printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration}
   else
-    printf -- "--- FAIL: %s (%.2fs)\n" ${function} $(( $(date "+%s") - ${start} ))
+    printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration}
     cat ${log} | sed 's/^/	/g'
     printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40}m%s${IS_TTY:+\033[m}\n" ${result} "${function}"
     let "failed_tests_cnt++"

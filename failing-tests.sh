@@ -33,6 +33,7 @@ it_should_match_string_with_description() {
 }
 
 it_should_match_regexp() {
+  sleep 0.3
   # use 'assert_match' to match against an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
   assert_match "aaa:88X09" "aaa:[0-9]{5}"
 }
