@@ -18,11 +18,7 @@ run_test() {
 
   echo "=== RUN ${function}"
   local start=$(date "+%s")
-  (
-    exec > /tmp/${function}.testlog 2>&1
-    set -x
-    ${function}
-  )
+  test -n "${VERBOSE}" && ( set -x; ${function} ) 2>&1 | tee /tmp/${function}.testlog || ( set -x; ${function} ) &> /tmp/${function}.testlog
   result=$?
 
   if [ ${result} -eq 0 ]

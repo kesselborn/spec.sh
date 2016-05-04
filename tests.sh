@@ -8,6 +8,10 @@
 #     # execute all tests that contain the word "string" in their name
 #     TESTS="string" ./tests.sh
 #
+# usually, test output is logged to a file, if you additionally want verbose output, set env var VERBOSE:
+#
+#     VERBOSE=1 ./tests.sh
+
 source spec.sh
 include external-test.sh
 
