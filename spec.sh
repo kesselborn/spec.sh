@@ -25,44 +25,50 @@ include() {
 # run the tests
 run_tests() {
   local functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
-  local duration_log=$(mktemp)
 
-  # this is the only dash compatible way to get sub-second time I found
-  (mkfifo ${duration_log}.sync; time -p cat ${duration_log}.sync) 2>&1 | grep real | sed 's/real//' > ${duration_log} &
-
+  local timer=$(start_timer)
   for f in $(printf "${functions}" | grep -o "before_all") \
            $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
            $(printf "${functions}" | grep -o "after_all")
   do
     run_test $f
   done
-
-  printf "" > ${duration_log}.sync
-  duration=$(cat ${duration_log})s
-  rm ${duration_log}.sync ${duration_log}
+  duration=$(stop_timer ${timer})
 
   if [ ${failed_tests_cnt} -eq 0 ]; then
-    printf "PASS\nok	${1:-$0}%s\n" "${duration}"
+    printf "PASS\nok	${1:-$0}	%.2fs\n" ${duration}
   else
-    printf "FAIL\nexit status %d\nFAIL	${1:-$0}%s\n" ${failed_tests_cnt} "${duration}"
+    printf "FAIL\nexit status %d\nFAIL	${1:-$0}	%.2fs\n" ${failed_tests_cnt} ${duration}
   fi
 
   exit ${failed_tests_cnt}
 }
 
+start_timer() {
+  local file=$(mktemp)
+  (mkfifo ${file}.sync; time -p cat ${file}.sync) 2>&1 | grep real | sed 's/real//' > ${file} &
+  echo ${file}
+}
+
+stop_timer() {
+  local file=$1
+  printf "" > ${file}.sync
+  duration=$(cat ${file})
+  rm ${file}.sync ${file}
+  echo ${duration}
+}
+
+
 run_test() {
   local function=$1
   local log=$(mktemp)
 
-  # this is the only dash compatible way to get sub-second time I found
-  (mkfifo ${log}.sync; time -p cat ${log}.sync) 2>&1 | grep real | sed 's/real/	duration/' >> ${log} &
+  local timer=$(start_timer)
   printf "=== RUN ${function}\n"
   test "${VERBOSE}" = "1" && ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' |  tee -a ${log} \
                           || ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' >>        ${log}
   result=$?
-  printf "" > ${log}.sync && rm ${log}.sync
-
-  duration=$(tail -n1 ${log} | grep duration | cut -f2 -d" ")
+  duration=$(stop_timer ${timer})
 
   if [ ${result} -eq 0 ]; then
     printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration}
