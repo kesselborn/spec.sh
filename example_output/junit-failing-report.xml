@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-	<testsuite tests="6" failures="6" time="0.310" name="failing-tests">
+	<testsuite tests="8" failures="7" time="0.058" name="./failing-tests.sh">
 		<properties>
 			<property name="go.version" value="go1.6"></property>
 		</properties>
-		<testcase classname="failing-tests" name="it_should_execute_command" time="0.000">
-			<failure message="Failed" type="">+ it_should_execute_command&#xA;+ assert &#39;ls /xxxtmp&#39;&#xA;+ &#39;[&#39; -z &#39;&#39; &#39;]&#39;&#xA;+ ls /xxxtmp&#xA;ls: /xxxtmp: No such file or directory&#xA;+ got=1&#xA;+ expected=0&#xA;+ description=&#39;expecting command &#39;\&#39;&#39;ls /xxxtmp&#39;\&#39;&#39; to succeed&#39;&#xA;+ set +x&#xA;failed expectation: �[1;38;40mexpecting command &#39;ls /xxxtmp&#39; to succeed (&#39;1&#39; == &#39;0&#39;) �[m&#xA;duration 0.00&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_execute_command�[m</failure>
+		<testcase classname="failing-tests.sh" name="it_should_execute_command" time="0.010">
+			<failure message="Failed" type="">+ it_should_execute_command&#xA;+ assert &#39;ls /xxxtmp&#39;&#xA;+ &#39;[&#39; -z &#39;&#39; &#39;]&#39;&#xA;+ ls /xxxtmp&#xA;ls: /xxxtmp: No such file or directory&#xA;+ got=1&#xA;+ expected=0&#xA;+ description=&#39;expecting command &#39;\&#39;&#39;ls /xxxtmp&#39;\&#39;&#39; to succeed&#39;&#xA;+ set +x&#xA;failed expectation: �[1;38;40mexpecting command &#39;ls /xxxtmp&#39; to succeed (&#39;1&#39; == &#39;0&#39;) �[m&#xA;+ exit 1&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_execute_command�[m</failure>
 		</testcase>
-		<testcase classname="failing-tests" name="it_should_reflect_exit_code" time="0.000">
-			<failure message="Failed" type="">+ it_should_reflect_exit_code&#xA;+ return 3&#xA;duration 0.00&#xA;error code: 3&#xA;error occured in �[1;38;40mit_should_reflect_exit_code�[m</failure>
+		<testcase classname="failing-tests.sh" name="it_should_reflect_exit_code" time="0.000">
+			<failure message="Failed" type="">+ it_should_reflect_exit_code&#xA;+ return 3&#xA;error code: 3&#xA;error occured in �[1;38;40mit_should_reflect_exit_code�[m</failure>
 		</testcase>
-		<testcase classname="failing-tests" name="it_should_match_exit_code" time="0.000">
-			<failure message="Failed" type="">+ it_should_match_exit_code&#xA;+ false&#xA;+ assert 0 0&#xA;+ &#39;[&#39; -z 0 &#39;]&#39;&#xA;+ got=0&#xA;+ expected=0&#xA;+ description=&#xA;+ set +x&#xA;######################################## PASSED TEST: &#39;0&#39; == &#39;0&#39; &#xA;+ assert 0 0 &#39;0 should be 0&#39;&#xA;+ &#39;[&#39; -z 0 &#39;]&#39;&#xA;+ got=0&#xA;+ expected=0&#xA;+ description=&#39;0 should be 0&#39;&#xA;+ set +x&#xA;######################################## PASSED TEST: 0 should be 0 (&#39;0&#39; == &#39;0&#39;) &#xA;+ assert 0 2&#xA;+ &#39;[&#39; -z 2 &#39;]&#39;&#xA;+ got=0&#xA;+ expected=2&#xA;+ description=&#xA;+ set +x&#xA;failed expectation: �[1;38;40m&#39;0&#39; == &#39;2&#39; �[m&#xA;duration 0.00&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_exit_code�[m</failure>
+		<testcase classname="failing-tests.sh" name="it_should_match_exit_code" time="0.000">
+			<failure message="Failed" type="">+ it_should_match_exit_code&#xA;+ false&#xA;+ assert 0 0&#xA;+ &#39;[&#39; -z 0 &#39;]&#39;&#xA;+ got=0&#xA;+ expected=0&#xA;+ description=&#xA;+ set +x&#xA;######################################## PASSED TEST: &#39;0&#39; == &#39;0&#39; &#xA;+ assert 0 0 &#39;0 should be 0&#39;&#xA;+ &#39;[&#39; -z 0 &#39;]&#39;&#xA;+ got=0&#xA;+ expected=0&#xA;+ description=&#39;0 should be 0&#39;&#xA;+ set +x&#xA;######################################## PASSED TEST: 0 should be 0 (&#39;0&#39; == &#39;0&#39;) &#xA;+ assert 0 2&#xA;+ &#39;[&#39; -z 2 &#39;]&#39;&#xA;+ got=0&#xA;+ expected=2&#xA;+ description=&#xA;+ set +x&#xA;failed expectation: �[1;38;40m&#39;0&#39; == &#39;2&#39; �[m&#xA;+ exit 1&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_exit_code�[m</failure>
 		</testcase>
-		<testcase classname="failing-tests" name="it_should_match_string" time="0.000">
-			<failure message="Failed" type="">+ it_should_match_string&#xA;++ echo hallo&#xA;++ tr l x&#xA;+ assert haxxo haggo&#xA;+ &#39;[&#39; -z haggo &#39;]&#39;&#xA;+ got=haxxo&#xA;+ expected=haggo&#xA;+ description=&#xA;+ set +x&#xA;failed expectation: �[1;38;40m&#39;haxxo&#39; == &#39;haggo&#39; �[m&#xA;duration 0.00&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_string�[m</failure>
+		<testcase classname="failing-tests.sh" name="it_should_match_string" time="0.000">
+			<failure message="Failed" type="">+ it_should_match_string&#xA;++ echo hallo&#xA;++ tr l x&#xA;+ assert haxxo haggo&#xA;+ &#39;[&#39; -z haggo &#39;]&#39;&#xA;+ got=haxxo&#xA;+ expected=haggo&#xA;+ description=&#xA;+ set +x&#xA;failed expectation: �[1;38;40m&#39;haxxo&#39; == &#39;haggo&#39; �[m&#xA;+ exit 1&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_string�[m</failure>
 		</testcase>
-		<testcase classname="failing-tests" name="it_should_match_string_with_description" time="0.000">
-			<failure message="Failed" type="">+ it_should_match_string_with_description&#xA;++ echo hallo&#xA;++ tr l x&#xA;+ assert haxxo haggo &#39;transforming string should work&#39;&#xA;+ &#39;[&#39; -z haggo &#39;]&#39;&#xA;+ got=haxxo&#xA;+ expected=haggo&#xA;+ description=&#39;transforming string should work&#39;&#xA;+ set +x&#xA;failed expectation: �[1;38;40mtransforming string should work (&#39;haxxo&#39; == &#39;haggo&#39;) �[m&#xA;duration 0.00&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_string_with_description�[m</failure>
+		<testcase classname="failing-tests.sh" name="it_should_match_string_with_description" time="0.000">
+			<failure message="Failed" type="">+ it_should_match_string_with_description&#xA;++ echo hallo&#xA;++ tr l x&#xA;+ assert haxxo haggo &#39;transforming string should work&#39;&#xA;+ &#39;[&#39; -z haggo &#39;]&#39;&#xA;+ got=haxxo&#xA;+ expected=haggo&#xA;+ description=&#39;transforming string should work&#39;&#xA;+ set +x&#xA;failed expectation: �[1;38;40mtransforming string should work (&#39;haxxo&#39; == &#39;haggo&#39;) �[m&#xA;+ exit 1&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_string_with_description�[m</failure>
 		</testcase>
-		<testcase classname="failing-tests" name="it_should_match_regexp" time="0.310">
-			<failure message="Failed" type="">+ it_should_match_regexp&#xA;+ sleep 0.3&#xA;+ assert_match aaa:88X09 &#39;aaa:[0-9]{5}&#39;&#xA;+ printf aaa:88X09&#xA;+ grep -E -m1 -o &#39;aaa:[0-9]{5}&#39;&#xA;+ head -n1&#xA;+ grep -E &#39;aaa:[0-9]{5}&#39;&#xA;+ assert 1 0 &#39;checking &#39;\&#39;&#39;aaa:88X09&#39;\&#39;&#39; to match /aaa:[0-9]{5}/&#39;&#xA;+ &#39;[&#39; -z 0 &#39;]&#39;&#xA;+ got=1&#xA;+ expected=0&#xA;+ description=&#39;checking &#39;\&#39;&#39;aaa:88X09&#39;\&#39;&#39; to match /aaa:[0-9]{5}/&#39;&#xA;+ set +x&#xA;failed expectation: �[1;38;40mchecking &#39;aaa:88X09&#39; to match /aaa:[0-9]{5}/ (&#39;1&#39; == &#39;0&#39;) �[m&#xA;duration 0.31&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_regexp�[m</failure>
+		<testcase classname="failing-tests.sh" name="it_should_match_regexp" time="0.310">
+			<failure message="Failed" type="">+ it_should_match_regexp&#xA;+ sleep 0.3&#xA;+ assert_match aaa:88X09 &#39;aaa:[0-9]{5}&#39;&#xA;+ printf aaa:88X09&#xA;+ grep -E -m1 -o &#39;aaa:[0-9]{5}&#39;&#xA;+ head -n1&#xA;+ grep -E &#39;aaa:[0-9]{5}&#39;&#xA;+ assert 1 0 &#39;checking &#39;\&#39;&#39;aaa:88X09&#39;\&#39;&#39; to match /aaa:[0-9]{5}/&#39;&#xA;+ &#39;[&#39; -z 0 &#39;]&#39;&#xA;+ got=1&#xA;+ expected=0&#xA;+ description=&#39;checking &#39;\&#39;&#39;aaa:88X09&#39;\&#39;&#39; to match /aaa:[0-9]{5}/&#39;&#xA;+ set +x&#xA;failed expectation: �[1;38;40mchecking &#39;aaa:88X09&#39; to match /aaa:[0-9]{5}/ (&#39;1&#39; == &#39;0&#39;) �[m&#xA;+ exit 1&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_match_regexp�[m</failure>
 		</testcase>
+		<testcase classname="failing-tests.sh" name="it_should_have_seven_failing_tests" time="0.000">
+			<failure message="Failed" type="">+ it_should_have_seven_failing_tests&#xA;+ assert 1 2&#xA;+ &#39;[&#39; -z 2 &#39;]&#39;&#xA;+ got=1&#xA;+ expected=2&#xA;+ description=&#xA;+ set +x&#xA;failed expectation: �[1;38;40m&#39;1&#39; == &#39;2&#39; �[m&#xA;+ exit 1&#xA;error code: 1&#xA;error occured in �[1;38;40mit_should_have_seven_failing_tests�[m</failure>
+		</testcase>
+		<testcase classname="failing-tests.sh" name="after_all" time="0.000"></testcase>
 	</testsuite>
 </testsuites>
