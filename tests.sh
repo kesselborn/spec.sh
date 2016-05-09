@@ -15,6 +15,12 @@
 # if you want to abort all tests when one test fails, set FAIL_FAST:
 #
 #     FAIL_FAST=1 ./tests.sh
+#
+# if you want to omit ansi color output, set NO_ANSI_COLOR:
+#
+#     NO_ANSI_COLOR=1 ./tests.sh
+#
+
 
 source spec.sh
 include external-test.sh

@@ -12,6 +12,7 @@
 # spec.sh in action
 
 test ! -t || IS_TTY=true
+test -z "$NO_ANSI_COLOR" || unset IS_TTY
 failed_tests_cnt=0
 set -o pipefail
 
