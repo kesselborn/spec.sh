@@ -38,4 +38,10 @@ it_should_match_regexp() {
   assert_match "aaa:88X09" "aaa:[0-9]{5}"
 }
 
+it_should_have_seven_failing_tests() {
+  assert 1 2
+  assert 0 0
+  echo "make sure it really has 7 failing tests!!!"
+}
+
 run_tests
