@@ -11,6 +11,10 @@
 # usually, test output is logged to a file, if you additionally want verbose output, set env var VERBOSE:
 #
 #     VERBOSE=1 ./tests.sh
+#
+# if you want to abort all tests when one test fails, set FAIL_FAST:
+#
+#     FAIL_FAST=1 ./tests.sh
 
 source spec.sh
 include external-test.sh

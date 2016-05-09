@@ -4,6 +4,10 @@
 
 source spec.sh
 
+after_all() {
+  echo "hihihi ... I am last"
+}
+
 it_should_execute_command() {
   # assert with one argument will execute the string and pass if the result is 0
   assert "ls /xxxtmp"
