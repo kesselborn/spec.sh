@@ -25,6 +25,10 @@ include() {
 # run the tests
 run_tests() {
   local functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
+  local duration_log=$(mktemp)
+
+  # this is the only dash compatible way to get sub-second time I found
+  (mkfifo ${duration_log}.sync; time -p cat ${duration_log}.sync) 2>&1 | grep real | sed 's/real//' > ${duration_log} &
 
   for f in $(printf "${functions}" | grep -o "before_all") \
            $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
@@ -32,6 +36,16 @@ run_tests() {
   do
     run_test $f
   done
+
+  printf "" > ${duration_log}.sync
+  duration=$(cat ${duration_log})s
+  rm ${duration_log}.sync ${duration_log}
+
+  if [ ${failed_tests_cnt} -eq 0 ]; then
+    printf "PASS\nok	${1:-$0}%s\n" "${duration}"
+  else
+    printf "FAIL\nexit status %d\nFAIL	${1:-$0}%s\n" ${failed_tests_cnt} "${duration}"
+  fi
 
   exit ${failed_tests_cnt}
 }

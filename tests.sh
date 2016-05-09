@@ -77,5 +77,6 @@ it_should_be_possible_to_skip_a_test() {
   SKIP_TEST
 }
 
-# this always needs to be last
-run_tests
+# this always needs to be last ... if you pass a parameter, this will be the class name of your tests
+# leaving it out will use the file name of the tests
+run_tests passing-tests
