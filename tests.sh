@@ -77,7 +77,7 @@ it_should_match_regexp() {
 
 it_should_be_possible_to_skip_a_test() {
   # you can skip a test ... it will be marked as skipped in the test output
-  SKIP_TEST
+  SKIP_TEST "only works in January"
 }
 
 # this always needs to be last ... if you pass a parameter, this will be the class name of your tests

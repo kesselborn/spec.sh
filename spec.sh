@@ -18,7 +18,7 @@ set -o pipefail # don't ignore errors that happen in a pipeline
 
 # call SKIP_TEST for tests you want to ignore temporarily ... optionally pass in a description
 SKIP_TEST() {
-  test -n "$1" && printf "skipping test: $1"
+  (set +x; test -n "$1" && printf "skipping test: $1\n")
   exit 222
 }
 
@@ -91,7 +91,7 @@ run_tests() {
 # <commands>
 # duration=$(stop_timer ${timer})
 start_timer() {
-  local file=$(mktemp /tmp/.spec.sh.timerfifo.${1:-noname}.XXX)
+  local file=$(mktemp /tmp/.spec.sh.timerfifo.${1:-noname}.XXXXXX)
   (mkfifo ${file}.sync; time -p cat ${file}.sync) 2>&1 | grep real | sed 's/real *//' > ${file} &
   echo ${file}
 }
