@@ -1,5 +1,5 @@
 === RUN it_should_execute_command
---- FAIL: it_should_execute_command (0.01s)
+--- FAIL: it_should_execute_command (0.00s)
 	+ it_should_execute_command
 	+ assert 'ls /xxxtmp'
 	+ '[' -z '' ']'
@@ -9,16 +9,16 @@
 	+ expected=0
 	+ description='expecting command '\''ls /xxxtmp'\'' to succeed'
 	+ set +x
-	failed expectation: [1;38;40mexpecting command 'ls /xxxtmp' to succeed ('1' == '0') [m
+	failed expectation: expecting command 'ls /xxxtmp' to succeed ('1' == '0') 
 	+ exit 1
 	error code: 1
-	error occured in [1;38;40mit_should_execute_command[m
+	error occured in it_should_execute_command
 === RUN it_should_reflect_exit_code
 --- FAIL: it_should_reflect_exit_code (0.00s)
 	+ it_should_reflect_exit_code
 	+ return 3
 	error code: 3
-	error occured in [1;38;40mit_should_reflect_exit_code[m
+	error occured in it_should_reflect_exit_code
 === RUN it_should_match_exit_code
 --- FAIL: it_should_match_exit_code (0.00s)
 	+ it_should_match_exit_code
@@ -43,10 +43,10 @@
 	+ expected=2
 	+ description=
 	+ set +x
-	failed expectation: [1;38;40m'0' == '2' [m
+	failed expectation: '0' == '2' 
 	+ exit 1
 	error code: 1
-	error occured in [1;38;40mit_should_match_exit_code[m
+	error occured in it_should_match_exit_code
 === RUN it_should_match_string
 --- FAIL: it_should_match_string (0.00s)
 	+ it_should_match_string
@@ -58,10 +58,10 @@
 	+ expected=haggo
 	+ description=
 	+ set +x
-	failed expectation: [1;38;40m'haxxo' == 'haggo' [m
+	failed expectation: 'haxxo' == 'haggo' 
 	+ exit 1
 	error code: 1
-	error occured in [1;38;40mit_should_match_string[m
+	error occured in it_should_match_string
 === RUN it_should_match_string_with_description
 --- FAIL: it_should_match_string_with_description (0.00s)
 	+ it_should_match_string_with_description
@@ -73,10 +73,10 @@
 	+ expected=haggo
 	+ description='transforming string should work'
 	+ set +x
-	failed expectation: [1;38;40mtransforming string should work ('haxxo' == 'haggo') [m
+	failed expectation: transforming string should work ('haxxo' == 'haggo') 
 	+ exit 1
 	error code: 1
-	error occured in [1;38;40mit_should_match_string_with_description[m
+	error occured in it_should_match_string_with_description
 === RUN it_should_match_regexp
 --- FAIL: it_should_match_regexp (0.31s)
 	+ it_should_match_regexp
@@ -92,10 +92,10 @@
 	+ expected=0
 	+ description='checking '\''aaa:88X09'\'' to match /aaa:[0-9]{5}/'
 	+ set +x
-	failed expectation: [1;38;40mchecking 'aaa:88X09' to match /aaa:[0-9]{5}/ ('1' == '0') [m
+	failed expectation: checking 'aaa:88X09' to match /aaa:[0-9]{5}/ ('1' == '0') 
 	+ exit 1
 	error code: 1
-	error occured in [1;38;40mit_should_match_regexp[m
+	error occured in it_should_match_regexp
 === RUN it_should_have_seven_failing_tests
 --- FAIL: it_should_have_seven_failing_tests (0.00s)
 	+ it_should_have_seven_failing_tests
@@ -105,12 +105,12 @@
 	+ expected=2
 	+ description=
 	+ set +x
-	failed expectation: [1;38;40m'1' == '2' [m
+	failed expectation: '1' == '2' 
 	+ exit 1
 	error code: 1
-	error occured in [1;38;40mit_should_have_seven_failing_tests[m
+	error occured in it_should_have_seven_failing_tests
 === RUN after_all
 --- PASS: after_all (0.00s)
 FAIL
 exit status 7
-FAIL	./failing-tests.sh	0.58s
+FAIL	./failing-tests.sh	0.49s

@@ -41,8 +41,11 @@ after_all() {
 # all functions starting with 'it_' will be executed in an unspecified order
 it_should_execute_command() {
   # assert with one argument will execute the string and pass if the result is 0
-  sleep 0.2
   assert "ls /tmp"
+}
+
+it_should_show_correct_duration() {
+  sleep 0.2
 }
 
 it_should_match_exit_code() {
