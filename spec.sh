@@ -76,9 +76,9 @@ run_tests() {
   duration=$(stop_timer ${timer})
 
   if [ ${failed_tests_cnt} -eq 0 ]; then
-    printf "PASS\nok	${1:-$0}	%.2fs\n" ${duration}
+    printf "PASS\nok	${1:-$0}	%.3fs\n" ${duration}
   else
-    printf "FAIL\nexit status %d\nFAIL	${1:-$0}	%.2fs\n" ${failed_tests_cnt} ${duration}
+    printf "FAIL\nexit status %d\nFAIL	${1:-$0}	%.3fs\n" ${failed_tests_cnt} ${duration}
   fi
 
   exit ${failed_tests_cnt}
