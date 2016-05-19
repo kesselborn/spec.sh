@@ -14,7 +14,8 @@
 test ! -t || IS_TTY=true
 test -z "$NO_ANSI_COLOR" || unset IS_TTY
 failed_tests_cnt=0
-set -o pipefail # don't ignore errors that happen in a pipeline
+set -o pipefail 2>/dev/null || true # don't ignore errors that happen in a pipeline
+set +o posix    2>/dev/null || true # switch off strict posix mode -- it will cause a block
 
 # call SKIP_TEST for tests you want to ignore temporarily ... optionally pass in a description
 SKIP_TEST() {
