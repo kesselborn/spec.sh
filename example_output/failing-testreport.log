@@ -1,5 +1,5 @@
 === RUN it_should_execute_command
---- FAIL: it_should_execute_command (0.00s)
+--- FAIL: it_should_execute_command (0.01s)
 	+ it_should_execute_command
 	+ assert 'ls /xxxtmp'
 	+ '[' -z '' ']'
@@ -113,4 +113,4 @@
 --- PASS: after_all (0.00s)
 FAIL
 exit status 7
-FAIL	./failing-tests.sh	0.49s
+FAIL	./failing-tests.sh	0.570s

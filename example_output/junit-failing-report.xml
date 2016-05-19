@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-	<testsuite tests="8" failures="7" time="0.049" name="./failing-tests.sh">
+	<testsuite tests="8" failures="7" time="0.570" name="./failing-tests.sh">
 		<properties>
 			<property name="go.version" value="go1.6"></property>
 		</properties>
-		<testcase classname="failing-tests.sh" name="it_should_execute_command" time="0.000">
+		<testcase classname="failing-tests.sh" name="it_should_execute_command" time="0.010">
 			<failure message="Failed" type="">+ it_should_execute_command&#xA;+ assert &#39;ls /xxxtmp&#39;&#xA;+ &#39;[&#39; -z &#39;&#39; &#39;]&#39;&#xA;+ ls /xxxtmp&#xA;ls: /xxxtmp: No such file or directory&#xA;+ got=1&#xA;+ expected=0&#xA;+ description=&#39;expecting command &#39;\&#39;&#39;ls /xxxtmp&#39;\&#39;&#39; to succeed&#39;&#xA;+ set +x&#xA;failed expectation: expecting command &#39;ls /xxxtmp&#39; to succeed (&#39;1&#39; == &#39;0&#39;) &#xA;+ exit 1&#xA;error code: 1&#xA;error occured in it_should_execute_command</failure>
 		</testcase>
 		<testcase classname="failing-tests.sh" name="it_should_reflect_exit_code" time="0.000">
