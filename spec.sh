@@ -52,7 +52,7 @@ assert() {
 # assert_match matches the first argument against an _extended_ regular expression, i.e.:
 # assert_match "foooooo" "fo{4}"
 assert_match() {
-  printf "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2"
+  (set +o pipefail; printf "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2")
   assert $? 0 "checking '$1' to match /$2/"
 }
 

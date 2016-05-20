@@ -1,5 +1,5 @@
 === RUN it_should_execute_command
---- FAIL: it_should_execute_command (0.01s)
+--- FAIL: it_should_execute_command (0.00s)
 	+ it_should_execute_command
 	+ assert 'ls /xxxtmp'
 	+ '[' -z '' ']'
@@ -82,6 +82,7 @@
 	+ it_should_match_regexp
 	+ sleep 0.3
 	+ assert_match aaa:88X09 'aaa:[0-9]{5}'
+	+ set +o pipefail
 	+ printf aaa:88X09
 	+ grep -E -m1 -o 'aaa:[0-9]{5}'
 	+ head -n1
@@ -113,4 +114,4 @@
 --- PASS: after_all (0.00s)
 FAIL
 exit status 7
-FAIL	./failing-tests.sh	0.570s
+FAIL	./failing-tests.sh	0.490s
