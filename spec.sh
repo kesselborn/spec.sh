@@ -101,7 +101,7 @@ stop_timer() {
   local file=$1
   printf "" > ${file}.sync
   duration=$(cat ${file})
-  #rm ${file}.sync ${file}
+  rm -f ${file}.sync ${file}
   echo ${duration}
 }
 
@@ -128,6 +128,6 @@ run_test() {
     let "failed_tests_cnt++"
     test "${function}" = "before_all" -o "$FAIL_FAST" = "1" && { after_all; exit 1; }
   fi
-  rm ${log}
+  rm -f ${log}
 }
 
