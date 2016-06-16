@@ -8,6 +8,15 @@ after_all() {
   echo "hihihi ... I am last"
 }
 
+it_should_support_defer_even_on_fails() {
+  echo "hallo" > out
+  defer rm out   # this will be executed when the test is finished or if any of the asserts fails
+
+  assert "test -e out"
+  assert 0 1
+}
+
+
 it_should_execute_command() {
   # assert with one argument will execute the string and pass if the result is 0
   assert "ls /xxxtmp"

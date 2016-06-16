@@ -48,6 +48,18 @@ it_should_show_correct_duration() {
   sleep 0.2
 }
 
+# defer statements get executed in reversed order. If you need to do complex operations
+# including pipes and redirections create a wrapper function
+it_should_support_defer() {
+  echo "hallo" > out
+  defer "rm out"   # this will be executed when the test is finished or if any of the asserts fails
+  defer "echo 'I will be executed second'"
+  defer "echo 'I will be executed first'"
+
+  assert "test -e out"
+  assert 0 0
+}
+
 it_should_match_exit_code() {
   # check return code or other integers
   true

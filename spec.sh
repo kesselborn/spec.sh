@@ -42,9 +42,11 @@ assert() {
     description="${description}${description:+ (}'${got}' == '${expected}'${description:+)}"
     if [ "${got}" != "${expected}" ]; then
       printf "${IS_TTY:+\033[1;37;41m}failed expectation:${IS_TTY:+\033[m} ${IS_TTY:+\033[1;38;40m}${description} ${IS_TTY:+\033[m}\n"
+      __execute_defers
       exit 1
     else
       printf "######################################## PASSED TEST: ${description} \n"
+      __execute_defers
     fi
   ) || exit 1
 }
@@ -54,6 +56,11 @@ assert() {
 assert_match() {
   (set +o pipefail; printf "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2")
   assert $? 0 "checking '$1' to match /$2/"
+}
+
+# defer will be executed whenever you test finishes or fails in the middle
+defer() {
+  __DEFERRED_CALLS="$*; ${__DEFERRED_CALLS}"
 }
 
 # use 'include <file>' to split tests over several files
@@ -67,14 +74,14 @@ include() {
 run_tests() {
   local functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
 
-  local timer=$(start_timer total_duration)
+  local timer=$(__start_timer total_duration)
   for f in $(printf "${functions}" | grep -o "before_all") \
            $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
            $(printf "${functions}" | grep -o "after_all")
   do
-    run_test $f
+    __run_test $f
   done
-  duration=$(stop_timer ${timer})
+  duration=$(__stop_timer ${timer})
 
   if [ ${failed_tests_cnt} -eq 0 ]; then
     (export LC_ALL=C; printf "PASS\nok	${1:-$0}	%.3fs\n" ${duration})
@@ -85,37 +92,48 @@ run_tests() {
   exit ${failed_tests_cnt}
 }
 
+
 ######### helper functions
 
+__execute_defers() {
+  test -z "${__DEFERRED_CALLS}" && return
+  local commands=$(echo "${__DEFERRED_CALLS}" | tr -s ';')
+
+  unset __DEFERRED_CALLS
+  printf -- "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval \"${commands}\" &> /dev/null'\n"
+  test -n "${commands}" && eval "${commands}" &> /dev/null || true
+}
+
+
 # timer function compatible with busybox shell: call in conjunction with 'stop timer':
-# timer=$(start_timer <timer-name>)
+# timer=$(__start_timer <timer-name>)
 # <commands>
-# duration=$(stop_timer ${timer})
-start_timer() {
+# duration=$(__stop_timer ${timer})
+__start_timer() {
   local file=$(mktemp /tmp/.spec.sh.timerfifo.${1:-noname}.XXXXXX)
   (mkfifo ${file}.sync; time -p cat ${file}.sync) 2>&1 | grep real | sed 's/real *//' > ${file} &
   echo ${file}
 }
 
-stop_timer() {
+__stop_timer() {
   local file=$1
   printf "" > ${file}.sync
   duration=$(cat ${file})
-  rm -f ${file}.sync ${file}
+  #rm ${file}.sync ${file}
   echo ${duration}
 }
 
 # runs a test and creates appropiate output
-run_test() {
+__run_test() {
   local function=$1
   local log=$(mktemp)
 
-  local timer=$(start_timer $1)
+  local timer=$(__start_timer $1)
   printf "=== RUN ${function}\n"
   test "${VERBOSE}" = "1" && ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' |  tee -a ${log} \
                           || ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' >>        ${log}
   result=$?
-  duration=$(stop_timer ${timer})
+  duration=$(__stop_timer ${timer})
 
   if [ ${result} -eq 0 ]; then
     (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration})
@@ -128,6 +146,6 @@ run_test() {
     let "failed_tests_cnt++"
     test "${function}" = "before_all" -o "$FAIL_FAST" = "1" && { after_all; exit 1; }
   fi
-  rm -f ${log}
+  rm ${log}
 }
 
