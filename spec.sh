@@ -144,7 +144,7 @@ __run_test() {
     test "${VERBOSE}" = "1" || cat ${log}
     printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40m}%s${IS_TTY:+\033[m}\n" ${result} "${function}"
     let "failed_tests_cnt++"
-    test "${function}" = "before_all" -o "$FAIL_FAST" = "1" && { after_all; exit 1; }
+    test "${function}" = "before_all" -o "$FAIL_FAST" = "1" && { after_all 2>/dev/null; exit 1; }
   fi
   rm ${log}
 }
