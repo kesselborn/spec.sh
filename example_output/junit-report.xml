@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-	<testsuite tests="10" failures="0" time="0.430" name="passing-tests">
+	<testsuite tests="11" failures="0" time="0.450" name="passing-tests">
 		<properties>
 			<property name="go.version" value="go1.6"></property>
 		</properties>
 		<testcase classname="passing-tests" name="before_all" time="0.000"></testcase>
-		<testcase classname="passing-tests" name="it_should_execute_command" time="0.010"></testcase>
+		<testcase classname="passing-tests" name="it_should_execute_command" time="0.000"></testcase>
 		<testcase classname="passing-tests" name="it_should_show_correct_duration" time="0.200"></testcase>
+		<testcase classname="passing-tests" name="it_should_support_defer" time="0.000"></testcase>
 		<testcase classname="passing-tests" name="it_should_match_exit_code" time="0.000"></testcase>
 		<testcase classname="passing-tests" name="it_should_match_string" time="0.000"></testcase>
 		<testcase classname="passing-tests" name="it_should_match_string_with_description" time="0.000"></testcase>
