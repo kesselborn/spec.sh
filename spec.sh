@@ -129,14 +129,13 @@ __run_test() {
 
   local timer=$(__start_timer $1)
   printf "=== RUN ${function}\n"
-  test "${VERBOSE}" = "1" && ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' |  tee -a ${log} \
-                          || ( set -x; ${function} ) 2>&1 | sed 's/^/	/g' >>        ${log}
+  test "${VERBOSE}" = "1" && ( set -x; ${function}; res=$?; set +x; __execute_defers; return $res ) 2>&1 | sed 's/^/	/g' |  tee -a ${log} \
+                          || ( set -x; ${function}; res=$?; set +x; __execute_defers; return $res ) 2>&1 | sed 's/^/	/g' >>        ${log}
   result=$?
   duration=$(__stop_timer ${timer})
 
   if [ ${result} -eq 0 ]; then
     (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration})
-    __execute_defers
   elif [ ${result} -eq 222 ]; then
     (export LC_ALL=C; printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration})
   else

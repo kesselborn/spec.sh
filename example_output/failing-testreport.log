@@ -42,6 +42,8 @@
 --- FAIL: it_should_reflect_exit_code (0.00s)
 	+ it_should_reflect_exit_code
 	+ return 3
+	+ res=3
+	+ set +x
 	error code: 3
 	error occured in it_should_reflect_exit_code
 === RUN it_should_match_exit_code
