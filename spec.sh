@@ -46,7 +46,6 @@ assert() {
       exit 1
     else
       printf "######################################## PASSED TEST: ${description} \n"
-      __execute_defers
     fi
   ) || exit 1
 }
@@ -137,6 +136,7 @@ __run_test() {
 
   if [ ${result} -eq 0 ]; then
     (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration})
+    __execute_defers
   elif [ ${result} -eq 222 ]; then
     (export LC_ALL=C; printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration})
   else
