@@ -32,6 +32,8 @@ For all features, see (and execute) [tests.sh](./tests.sh) for passing tests and
         # execute all tests that contain the word "string" in their name
         TESTS="string" ./tests.sh
 
+  - `INCLUDES`: if you include several test files but temporarily only want to execute tests from one (or more) specific files (works the same as TESTS)
+
   - `VERBOSE`: usually, test output is logged to a temporary file and only printed to `stdout` if an error occurred. If you want to have verbose output to `stdout`, set `VERBOSE`:
 
         VERBOSE=1 ./tests.sh

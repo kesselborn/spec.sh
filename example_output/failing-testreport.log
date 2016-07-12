@@ -141,4 +141,4 @@
 --- PASS: after_all (0.00s)
 FAIL
 exit status 8
-FAIL	./failing-tests.sh	0.540s
+FAIL	./failing-tests.sh	0.550s

@@ -64,7 +64,10 @@ defer() {
 
 # use 'include <file>' to split tests over several files
 include() {
-  __SPEC_SH_INCLUDES="${__SPEC_SH_INCLUDES} $1"
+  if echo $1 | grep -E "${INCLUDES:-.*}" &>/dev/null
+  then
+    __SPEC_SH_INCLUDES="${__SPEC_SH_INCLUDES} $1"
+  fi
   source $1
 }
 
