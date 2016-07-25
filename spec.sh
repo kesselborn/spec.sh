@@ -11,11 +11,36 @@
 # For usage see files tests.sh and failing-tests.sh and execute them to see
 # spec.sh in action
 
-test ! -t || IS_TTY=true
-test -z "$NO_ANSI_COLOR" || unset IS_TTY
+# options that can be set via environmnet variables:
+#
+#  - `TESTS`: if you just want to execute some specific tests, set the `TESTS` env var to an [_extended_ regexp](https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html):
+#
+#        # execute tests that match exactly "it_should_match_string" or match the substring "execute_external_tests"
+#        TESTS="(^it_should_match_string$|execute_external_tests)" ./tests.sh
+#
+#        # execute all tests that contain the word "string" in their name
+#        TESTS="string" ./tests.sh
+#
+#  - `INCLUDES`: if you include several test files but temporarily only want to execute tests from one (or more) specific files (works the same as TESTS)
+#
+#  - `VERBOSE`: usually, test output is logged to a temporary file and only printed to `stdout` if an error occurred. If you want to have verbose output to `stdout`, set `VERBOSE`:
+#
+#        VERBOSE=1 ./tests.sh
+#
+#  - `FAIL_FAST`: set fail fast to exit immediately after the first test failed:
+#
+#        FAIL_FAST=1 ./tests.sh
+#
+#  - `NO_ANSI_COLOR`: don't add ansi color codes to output
+#
+#        NO_ANSI_COLOR=1 ./tests.sh
+
+test ! -t || IS_TTY=true                   # omit ansi colors if we don't output to a tty (unreliable)
+test -z "$NO_ANSI_COLOR" || unset IS_TTY   # force omit ansi colors
+set -o pipefail 2>/dev/null || true        # don't ignore errors that happen in a pipeline
+set +o posix    2>/dev/null || true        # switch off strict posix mode as it will cause a dead lock
+
 failed_tests_cnt=0
-set -o pipefail 2>/dev/null || true # don't ignore errors that happen in a pipeline
-set +o posix    2>/dev/null || true # switch off strict posix mode -- it will cause a block
 
 # call SKIP_TEST for tests you want to ignore temporarily ... optionally pass in a description
 SKIP_TEST() {
@@ -51,18 +76,18 @@ assert() {
 }
 
 # assert_match matches the first argument against an _extended_ regular expression, i.e.:
-# assert_match "foooooo" "fo{4}"
+# assert_match "foooobar" "fo{4}bar"
 assert_match() {
   (set +o pipefail; printf "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2")
   assert $? 0 "checking '$1' to match /$2/"
 }
 
-# defer will be executed whenever you test finishes or fails in the middle
+# defer will be executed whenever your test finishes or fails in the middle
 defer() {
   __DEFERRED_CALLS="$*; ${__DEFERRED_CALLS}"
 }
 
-# use 'include <file>' to split tests over several files
+# use 'include <file>' to include a file with test functions
 include() {
   if echo $1 | grep -E "${INCLUDES:-.*}" &>/dev/null
   then
@@ -95,7 +120,7 @@ run_tests() {
 }
 
 
-######### helper functions
+######### "private" functions
 
 __execute_defers() {
   test -z "${__DEFERRED_CALLS}" && return
