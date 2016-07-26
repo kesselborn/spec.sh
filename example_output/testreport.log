@@ -3,22 +3,22 @@
 === RUN it_should_execute_command
 --- PASS: it_should_execute_command (0.01s)
 === RUN it_should_show_correct_duration
---- PASS: it_should_show_correct_duration (0.20s)
+--- PASS: it_should_show_correct_duration (0.21s)
 === RUN it_should_support_defer
---- PASS: it_should_support_defer (0.02s)
+--- PASS: it_should_support_defer (0.03s)
 === RUN it_should_match_exit_code
---- PASS: it_should_match_exit_code (0.00s)
+--- PASS: it_should_match_exit_code (0.01s)
 === RUN it_should_match_string
 --- PASS: it_should_match_string (0.01s)
 === RUN it_should_match_string_with_description
 --- PASS: it_should_match_string_with_description (0.01s)
 === RUN it_should_match_regexp
---- PASS: it_should_match_regexp (0.02s)
+--- PASS: it_should_match_regexp (0.01s)
 === RUN it_should_be_possible_to_skip_a_test
---- SKIP: it_should_be_possible_to_skip_a_test (0.01s)
+--- SKIP: it_should_be_possible_to_skip_a_test (0.00s)
 === RUN it_should_execute_external_tests
---- PASS: it_should_execute_external_tests (0.00s)
+--- PASS: it_should_execute_external_tests (0.01s)
 === RUN after_all
 --- PASS: after_all (0.00s)
 PASS
-ok	passing-tests	0.800s
+ok	passing-tests	0.960s
