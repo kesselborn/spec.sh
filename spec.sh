@@ -147,7 +147,7 @@ __stop_timer() {
   local file=$1
   printf "" > ${file}.sync
   duration=$(cat ${file})
-  #rm ${file}.sync ${file}
+  rm ${file}.sync ${file}
   echo ${duration}
 }
 
