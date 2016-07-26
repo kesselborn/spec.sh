@@ -164,11 +164,11 @@ __run_test() {
   duration=$(__stop_timer ${timer})
 
   if [ ${result} -eq 0 ]; then
-    (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration})
+    (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration:0})
   elif [ ${result} -eq 222 ]; then
-    (export LC_ALL=C; printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration})
+    (export LC_ALL=C; printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration:0})
   else
-    (export LC_ALL=C; printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration})
+    (export LC_ALL=C; printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration:0})
     test "${VERBOSE}" = "1" || cat ${log}
     printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40m}%s${IS_TTY:+\033[m}\n" ${result} "$(grep -Hon "${function}" $0 ${__SPEC_SH_INCLUDES})"
     let "failed_tests_cnt++"
