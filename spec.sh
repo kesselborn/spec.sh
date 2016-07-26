@@ -125,10 +125,11 @@ run_tests() {
 __execute_defers() {
   test -z "${__DEFERRED_CALLS}" && return
   local commands=$(echo "${__DEFERRED_CALLS}" | tr -s ';')
+  local file=$(mktemp /tmp/.spec.sh.deferred_calls.XXXXXX)
 
   unset __DEFERRED_CALLS
-  printf -- "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval \"${commands}\" &> /dev/null'\n"
-  test -n "${commands}" && eval "${commands}" &> /dev/null || true
+  printf -- "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval \"${commands}\" &> ${file}'\n"
+  test -n "${commands}" && eval "${commands}" &> ${file} && rm ${file} || true
 }
 
 
