@@ -34,6 +34,13 @@
 #  - `NO_ANSI_COLOR`: don't add ansi color codes to output
 #
 #        NO_ANSI_COLOR=1 ./tests.sh
+#
+# - `RERUN_FAILED_FROM`: run all tests which failed in the provided log file
+#
+#       ./tests.sh > log1
+#
+#       # rerun all tests that failed (don't redirect into the same log file -- this will rerun all tests)
+#       RERUN_FAILED_FROM=log1 ./tests.sh > log2
 
 test ! -t || IS_TTY=true                   # omit ansi colors if we don't output to a tty (unreliable)
 test -z "$NO_ANSI_COLOR" || unset IS_TTY   # force omit ansi colors
@@ -67,10 +74,11 @@ assert() {
     description="${description}${description:+ (}'${got}' == '${expected}'${description:+)}"
     if [ "${got}" != "${expected}" ]; then
       printf "${IS_TTY:+\033[1;37;41m}failed expectation:${IS_TTY:+\033[m} ${IS_TTY:+\033[1;38;40m}${description} ${IS_TTY:+\033[m}\n"
+      printf "######################################## FAILED TEST: $(echo ${description})\n"
       __execute_defers
       exit 1
     else
-      printf "######################################## PASSED TEST: ${description} \n"
+      printf "######################################## PASSED TEST: $(echo ${description})\n"
     fi
   ) || exit 1
 }
@@ -100,6 +108,7 @@ include() {
 # be the name of the test script or the parameter you pass to 'run_tests'
 run_tests() {
   local functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
+  test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
 
   local timer=$(__start_timer total_duration)
   for f in $(printf "${functions}" | grep -o "before_all") \

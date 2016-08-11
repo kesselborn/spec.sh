@@ -46,6 +46,13 @@ For all features, see (and execute) [tests.sh](./tests.sh) for passing tests and
 
         NO_ANSI_COLOR=1 ./tests.sh
 
+  - `RERUN_FAILED_FROM`: run all tests which failed in the provided log file
+
+        ./tests.sh > log1
+
+        # rerun all tests that failed (don't redirect into the same log file -- this will rerun all tests)
+        RERUN_FAILED_FROM=log1 ./tests.sh > log2
+
 
 # junit output
 

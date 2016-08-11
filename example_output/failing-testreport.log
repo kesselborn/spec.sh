@@ -1,5 +1,5 @@
 === RUN it_should_support_defer_even_on_fails
---- FAIL: it_should_support_defer_even_on_fails (0.03s)
+--- FAIL: it_should_support_defer_even_on_fails (0.02s)
 	+ it_should_support_defer_even_on_fails
 	+ echo hallo
 	+ defer rm out
@@ -11,7 +11,7 @@
 	+ expected=0
 	+ description='expecting command '\''test -e out'\'' to succeed'
 	+ set +x
-	######################################## PASSED TEST: expecting command 'test -e out' to succeed ('0' == '0') 
+	######################################## PASSED TEST: expecting command 'test -e out' to succeed ('0' == '0')
 	+ assert 0 1
 	+ '[' -z 1 ']'
 	+ got=0
@@ -19,12 +19,13 @@
 	+ description=
 	+ set +x
 	failed expectation: '0' == '1' 
-	%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval "rm out; " &> /tmp/.spec.sh.deferred_calls.irJav2'
+	######################################## FAILED TEST: '0' == '1'
+	%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval "rm out; " &> /tmp/.spec.sh.deferred_calls.zt4BDN'
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:11:it_should_support_defer_even_on_fails
 === RUN it_should_execute_command
---- FAIL: it_should_execute_command (0.01s)
+--- FAIL: it_should_execute_command (0.00s)
 	+ it_should_execute_command
 	+ assert 'ls /xxxtmp'
 	+ '[' -z '' ']'
@@ -35,11 +36,12 @@
 	+ description='expecting command '\''ls /xxxtmp'\'' to succeed'
 	+ set +x
 	failed expectation: expecting command 'ls /xxxtmp' to succeed ('1' == '0') 
+	######################################## FAILED TEST: expecting command 'ls /xxxtmp' to succeed ('1' == '0')
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:20:it_should_execute_command
 === RUN it_should_reflect_exit_code
---- FAIL: it_should_reflect_exit_code (0.01s)
+--- FAIL: it_should_reflect_exit_code (0.00s)
 	+ it_should_reflect_exit_code
 	+ return 3
 	+ res=3
@@ -56,14 +58,14 @@
 	+ expected=0
 	+ description=
 	+ set +x
-	######################################## PASSED TEST: '0' == '0' 
+	######################################## PASSED TEST: '0' == '0'
 	+ assert 0 0 '0 should be 0'
 	+ '[' -z 0 ']'
 	+ got=0
 	+ expected=0
 	+ description='0 should be 0'
 	+ set +x
-	######################################## PASSED TEST: 0 should be 0 ('0' == '0') 
+	######################################## PASSED TEST: 0 should be 0 ('0' == '0')
 	+ assert 0 2
 	+ '[' -z 2 ']'
 	+ got=0
@@ -71,11 +73,12 @@
 	+ description=
 	+ set +x
 	failed expectation: '0' == '2' 
+	######################################## FAILED TEST: '0' == '2'
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:29:it_should_match_exit_code
 === RUN it_should_match_string
---- FAIL: it_should_match_string (0.02s)
+--- FAIL: it_should_match_string (0.01s)
 	+ it_should_match_string
 	++ echo hallo
 	++ tr l x
@@ -86,12 +89,13 @@
 	+ description=
 	+ set +x
 	failed expectation: 'haxxo' == 'haggo' 
+	######################################## FAILED TEST: 'haxxo' == 'haggo'
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:38:it_should_match_string
 ./failing-tests.sh:43:it_should_match_string
 === RUN it_should_match_string_with_description
---- FAIL: it_should_match_string_with_description (0.06s)
+--- FAIL: it_should_match_string_with_description (0.01s)
 	+ it_should_match_string_with_description
 	++ echo hallo
 	++ tr l x
@@ -102,11 +106,12 @@
 	+ description='transforming string should work'
 	+ set +x
 	failed expectation: transforming string should work ('haxxo' == 'haggo') 
+	######################################## FAILED TEST: transforming string should work ('haxxo' == 'haggo')
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:43:it_should_match_string_with_description
 === RUN it_should_match_regexp
---- FAIL: it_should_match_regexp (0.32s)
+--- FAIL: it_should_match_regexp (0.31s)
 	+ it_should_match_regexp
 	+ sleep 0.3
 	+ assert_match aaa:88X09 'aaa:[0-9]{5}'
@@ -122,6 +127,7 @@
 	+ description='checking '\''aaa:88X09'\'' to match /aaa:[0-9]{5}/'
 	+ set +x
 	failed expectation: checking 'aaa:88X09' to match /aaa:[0-9]{5}/ ('1' == '0') 
+	######################################## FAILED TEST: checking 'aaa:88X09' to match /aaa:[0-9]{5}/ ('1' == '0')
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:48:it_should_match_regexp
@@ -135,6 +141,7 @@
 	+ description=
 	+ set +x
 	failed expectation: '1' == '2' 
+	######################################## FAILED TEST: '1' == '2'
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:54:it_should_have_seven_failing_tests
@@ -142,4 +149,4 @@
 --- PASS: after_all (0.00s)
 FAIL
 exit status 8
-FAIL	./failing-tests.sh	1.230s
+FAIL	./failing-tests.sh	0.660s
