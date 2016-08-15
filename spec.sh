@@ -178,11 +178,11 @@ __run_test() {
     cat ${log}|grep " *skipping test:"
     (export LC_ALL=C; printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration:0})
   else
-    (export LC_ALL=C; printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration:0})
     test "${VERBOSE}" = "1" || cat ${log}
     printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40m}%s${IS_TTY:+\033[m}\n" ${result} "$(grep -Hon "${function}" $0 ${__SPEC_SH_INCLUDES})"
     let "failed_tests_cnt++"
     test "${function}" = "before_all" -o "$FAIL_FAST" = "1" && { after_all 2>/dev/null; exit 1; }
+    (export LC_ALL=C; printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration:0})
   fi
   rm ${log}
 }
