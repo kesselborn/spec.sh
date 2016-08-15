@@ -51,7 +51,7 @@ failed_tests_cnt=0
 
 # call SKIP_TEST for tests you want to ignore temporarily ... optionally pass in a description
 SKIP_TEST() {
-  (set +x; test -n "$1" && printf "skipping test: $1\n")
+  (set +x; test -n "$1" && printf "skipping test: ${1}\n")
   exit 222
 }
 
@@ -175,6 +175,7 @@ __run_test() {
   if [ ${result} -eq 0 ]; then
     (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration:0})
   elif [ ${result} -eq 222 ]; then
+    cat ${log}|grep " *skipping test:"
     (export LC_ALL=C; printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration:0})
   else
     (export LC_ALL=C; printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration:0})
