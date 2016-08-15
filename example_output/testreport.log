@@ -22,4 +22,4 @@
 === RUN after_all
 --- PASS: after_all (0.00s)
 PASS
-ok	passing-tests	0.550s
+ok	passing-tests	0.530s
