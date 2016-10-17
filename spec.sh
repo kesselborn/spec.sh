@@ -10,10 +10,12 @@
 # This is a mini shell test framework that outputs the test like go test does
 # For usage see files tests.sh and failing-tests.sh and execute them to see
 # spec.sh in action
-
+# 
+#  - usage:                    this script should not be called directly -- for usage see https://github.com/kesselborn/spec.sh#usage ... see env vars below for per-call options
+#
 # options that can be set via environmnet variables:
 #
-#  - `TESTS`: if you just want to execute some specific tests, set the `TESTS` env var to an [_extended_ regexp](https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html):
+#  - TESTS="<tests>":          (ext. regexp) if you just want to execute some specific tests, set the TESTS env var to an [_extended_ regexp](https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html):
 #
 #        # execute tests that match exactly "it_should_match_string" or match the substring "execute_external_tests"
 #        TESTS="(^it_should_match_string$|execute_external_tests)" ./tests.sh
@@ -21,26 +23,29 @@
 #        # execute all tests that contain the word "string" in their name
 #        TESTS="string" ./tests.sh
 #
-#  - `INCLUDES`: if you include several test files but temporarily only want to execute tests from one (or more) specific files (works the same as TESTS)
+#  - INCLUDES="<files>":       (ext. regexp) if you include several test files but temporarily only want to execute tests from one (or more) specific files (works the same as TESTS)
 #
-#  - `VERBOSE`: usually, test output is logged to a temporary file and only printed to `stdout` if an error occurred. If you want to have verbose output to `stdout`, set `VERBOSE`:
+#  - VERBOSE=1:                usually, test output is logged to a temporary file and only printed to stdout if an error occurred. If you want to have verbose output to stdout, set VERBOSE:
 #
 #        VERBOSE=1 ./tests.sh
 #
-#  - `FAIL_FAST`: set fail fast to exit immediately after the first test failed:
+#  - FAIL_FAST=1:              set fail fast to exit immediately after the first test failed:
 #
 #        FAIL_FAST=1 ./tests.sh
 #
-#  - `NO_ANSI_COLOR`: don't add ansi color codes to output
+#  - NO_ANSI_COLOR=1:          don't add ansi color codes to output
 #
 #        NO_ANSI_COLOR=1 ./tests.sh
 #
-# - `RERUN_FAILED_FROM`: run all tests which failed in the provided log file
+#  - RERUN_FAILED_FROM=<file>: run all tests which failed in the provided log file
 #
 #       ./tests.sh > log1
 #
 #       # rerun all tests that failed (don't redirect into the same log file -- this will rerun all tests)
 #       RERUN_FAILED_FROM=log1 ./tests.sh > log2
+
+$(return >/dev/null 2>&1)
+test $? -eq 0 || printf "$(cat $0 | grep '^#  - ' | sed 's/^#  - \([^:][^:]*\):/\\033[1;38;40m\1\\033[m/g')\n"
 
 test ! -t || IS_TTY=true                   # omit ansi colors if we don't output to a tty (unreliable)
 test -z "$NO_ANSI_COLOR" || unset IS_TTY   # force omit ansi colors
