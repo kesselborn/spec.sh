@@ -112,7 +112,7 @@ include() {
 # Call run tests at the end of your test file. The name of the testsuite will either
 # be the name of the test script or the parameter you pass to 'run_tests'
 run_tests() {
-  local functions=$(grep -Eho "(^it_[a-zA-Z_]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
+  local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
   test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
 
   local timer=$(__start_timer total_duration)
