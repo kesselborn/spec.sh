@@ -129,7 +129,7 @@ run_tests() {
            $(printf "${functions}" | grep -o "after_all")
   do
     cnt=$(( $cnt + 1 ))
-    test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -eq 0 && printf "skipping $f due to sharding settings\n" && continue; }
+    test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -ne 0 && printf "skipping $f due to sharding settings\n" && continue; }
     __run_test $f
   done
   duration=$(__stop_timer ${timer})
