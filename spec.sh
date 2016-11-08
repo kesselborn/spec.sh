@@ -43,6 +43,12 @@
 #
 #       # rerun all tests that failed (don't redirect into the same log file -- this will rerun all tests)
 #       RERUN_FAILED_FROM=log1 ./tests.sh > log2
+#
+#  - SHARD:                    runs only every nth test by using mod + offset logic (e.g. SHARD=2+0 ./tests.sh & SHARD=2+1 ./tests.sh)
+#
+#        SHARD=3+0 ./tests.sh &   \
+#          SHARD=3+1 ./tests.sh & \
+#          SHARD=3+2 ./tests.sh & \
 
 $(return >/dev/null 2>&1)
 test $? -eq 0 || printf "$(cat $0 | grep '^#  - ' | sed 's/^#  - \([^:][^:]*\):/\\033[1;38;40m\1\\033[m/g')\n"
@@ -114,12 +120,16 @@ include() {
 run_tests() {
   local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
   test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
+  test -z "${SHARD}" || { shard_mod="$(echo "${SHARD}" | cut -f1 -d+)"; shard_offset="$(echo "${SHARD}" | cut -f2 -d+)"; }
 
   local timer=$(__start_timer total_duration)
+  cnt=0
   for f in $(printf "${functions}" | grep -o "before_all") \
            $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
            $(printf "${functions}" | grep -o "after_all")
   do
+    cnt=$(( $cnt + 1 ))
+    test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -eq 0 && printf "skipping $f due to sharding settings\n" && continue; }
     __run_test $f
   done
   duration=$(__stop_timer ${timer})

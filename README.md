@@ -53,6 +53,11 @@ For all features, see (and execute) [tests.sh](./tests.sh) for passing tests and
         # rerun all tests that failed (don't redirect into the same log file -- this will rerun all tests)
         RERUN_FAILED_FROM=log1 ./tests.sh > log2
 
+  - `SHARD`: runs only every nth test by using mod + offset logic (e.g. SHARD=2+1); in order to shard your tests in three runs, execute
+
+        SHARD=3+0 ./tests.sh &   \
+          SHARD=3+1 ./tests.sh & \
+          SHARD=3+2 ./tests.sh & \
 
 # junit output
 
