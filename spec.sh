@@ -121,6 +121,7 @@ run_tests() {
   local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
   test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
   test -z "${SHARD}" || { shard_mod="$(echo "${SHARD}" | cut -f1 -d+)"; shard_offset="$(echo "${SHARD}" | cut -f2 -d+)"; }
+  if grep it_ tests.sh |sort|uniq -c|grep -v " .*1"; then echo "duplicate test names forbidden"; exit; fi
 
   local timer=$(__start_timer total_duration)
   cnt=0
@@ -155,7 +156,6 @@ __execute_defers() {
   printf -- "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval \"${commands}\" &> ${file}'\n"
   test -n "${commands}" && eval "${commands}" &> ${file} && rm ${file} || true
 }
-
 
 # timer function compatible with busybox shell: call in conjunction with 'stop timer':
 # timer=$(__start_timer <timer-name>)
