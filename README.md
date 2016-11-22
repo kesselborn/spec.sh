@@ -22,6 +22,8 @@ The basic usage is as follows:
 
 For all features, see (and execute) [tests.sh](./tests.sh) for passing tests and [failing-tests.sh](./failing-tests.sh) for failing tests
 
+Have a look at [some sample output](#sample-output)
+
 ## options
 
   - `TESTS`: if you just want to execute some specific tests, set the `TESTS` env var to an [_extended_ regexp](https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html):
