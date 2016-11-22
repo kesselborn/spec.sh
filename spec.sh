@@ -136,9 +136,9 @@ run_tests() {
   duration=$(__stop_timer ${timer})
 
   if [ ${failed_tests_cnt} -eq 0 ]; then
-    (export LC_ALL=C; printf "PASS\nok	${1:-$0}	%.3fs\n" ${duration})
+    (export LC_ALL=C; printf "PASS\nok	${1:-$(basename $0|sed 's/\.sh$//g')}	%.3fs\n" ${duration})
   else
-    (export LC_ALL=C; printf "FAIL\nexit status %d\nFAIL	${1:-$0}	%.3fs\n" ${failed_tests_cnt} ${duration})
+    (export LC_ALL=C; printf "FAIL\nexit status %d\nFAIL	${1:-$(basename $0|sed 's/\.sh$//g')}	%.3fs\n" ${failed_tests_cnt} ${duration})
   fi
 
   exit ${failed_tests_cnt}
