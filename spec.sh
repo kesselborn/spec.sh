@@ -118,10 +118,11 @@ include() {
 # Call run tests at the end of your test file. The name of the testsuite will either
 # be the name of the test script or the parameter you pass to 'run_tests'
 run_tests() {
+  if grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES}|sort|uniq -c|grep -v " .*1"; then echo "duplicate test names forbidden"; exit; fi
+
   local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
   test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
   test -z "${SHARD}" || { shard_mod="$(echo "${SHARD}" | cut -f1 -d+)"; shard_offset="$(echo "${SHARD}" | cut -f2 -d+)"; }
-  if grep it_ tests.sh |sort|uniq -c|grep -v " .*1"; then echo "duplicate test names forbidden"; exit; fi
 
   local timer=$(__start_timer total_duration)
   cnt=0
