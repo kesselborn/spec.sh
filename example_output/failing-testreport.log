@@ -19,7 +19,7 @@
 	+ set +x
 	failed expectation: '0' == '1' 
 	######################################## FAILED TEST: '0' == '1'
-	%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval "rm out; " &> /tmp/.spec.sh.deferred_calls.VKCFSG'
+	%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval "rm out; " &> /tmp/.spec.sh.deferred_calls.ftWt4Y'
 	+ exit 1
 	error code: 1
 	error occured in ./failing-tests.sh:11:it_should_support_defer_even_on_fails
@@ -93,7 +93,7 @@
 	error code: 1
 	error occured in ./failing-tests.sh:38:it_should_match_string
 ./failing-tests.sh:43:it_should_match_string
---- FAIL: it_should_match_string (0.00s)
+--- FAIL: it_should_match_string (0.01s)
 === RUN it_should_match_string_with_description
 	+ it_should_match_string_with_description
 	++ echo hallo
@@ -149,4 +149,4 @@
 --- PASS: after_all (0.00s)
 FAIL
 exit status 8
-FAIL	./failing-tests.sh	0.630s
+FAIL	failing-tests	0.730s
