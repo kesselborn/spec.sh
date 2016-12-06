@@ -89,7 +89,7 @@ assert() {
       __execute_defers
       exit 1
     else
-      printf "######################################## PASSED TEST: $(echo ${description})\n"
+      printf "######################################## PASSED TEST: %s\n" "$(echo ${description})"
     fi
   ) || exit 1
 }
@@ -97,7 +97,7 @@ assert() {
 # assert_match matches the first argument against an _extended_ regular expression, i.e.:
 # assert_match "foooobar" "fo{4}bar"
 assert_match() {
-  (set +o pipefail; printf "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2")
+  (set +o pipefail; printf "%s" "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2")
   assert $? 0 "checking '$1' to match /$2/"
 }
 
@@ -155,7 +155,8 @@ __execute_defers() {
 
   unset __DEFERRED_CALLS
   printf -- "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval \"${commands}\" &> ${file}'\n"
-  test -n "${commands}" && eval "${commands}" &> ${file} && rm ${file} || true
+  test -n "${commands}" && eval "${commands}" &> ${file} || printf "defer errored (defer errors are ignored in test error count):\n$(cat ${file})\n"
+  rm ${file}
 }
 
 # timer function compatible with busybox shell: call in conjunction with 'stop timer':
