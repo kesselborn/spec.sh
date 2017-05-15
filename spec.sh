@@ -72,8 +72,8 @@ assert_eq() {
   description=$3
 
   (set +x
-    description="${description}${description:+ (}'${got}' == '${expected}'${description:+)}"
-    if [ "${got}" != "${expected}" ]; then
+    description="${description}${description:+ (}'${1}' $(test -n "${NEGATE}" && echo "!=" || echo "==") '${2}'${description:+)}"
+    if [ "${1}" $(test -n "${NEGATE}" && echo "==" || echo "!=") "${2}" ]; then
       printf "${IS_TTY:+\033[1;37;41m}failed expectation:${IS_TTY:+\033[m} ${IS_TTY:+\033[1;38;40m}${description} ${IS_TTY:+\033[m}\n"
       printf "######################################## FAILED TEST: $(echo ${description})\n"
       __execute_defers
