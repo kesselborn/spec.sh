@@ -66,20 +66,10 @@ SKIP_TEST() {
   exit 222
 }
 
-# two possible ways to call assert:
-# assert "<command that should succeed>"
-# assert "<got>" "<expected>" ["<description>"]
-assert() {
-  if [ -z "$2" ]; then
-    $1 # execute first parameter
-    got=$?
-    expected=0
-    description="expecting command '$1' to succeed"
-  else
-    got=$1
-    expected=$2
-    description=$3
-  fi
+
+# assert_eq "<got>" "<expected>" ["<description>"]
+assert_eq() {
+  description=$3
 
   (set +x
     description="${description}${description:+ (}'${got}' == '${expected}'${description:+)}"
@@ -94,11 +84,17 @@ assert() {
   ) || exit 1
 }
 
+# assert "<command that should succeed>" ["<description>"]
+assert() {
+  $1
+  assert_eq $? 0 "${2:-expecting command '$1' to succeed}"
+}
+
 # assert_match matches the first argument against an _extended_ regular expression, i.e.:
 # assert_match "foooobar" "fo{4}bar"
 assert_match() {
   (set +o pipefail; printf "%s" "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2")
-  assert $? 0 "checking '$1' to match /$2/"
+  assert_eq $? 0 "checking '$1' to match /$2/"
 }
 
 # defer will be executed whenever your test finishes or fails in the middle
