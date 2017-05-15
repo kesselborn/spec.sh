@@ -42,6 +42,7 @@ after_all() {
 it_should_execute_command() {
   # assert with one argument will execute the string and pass if the result is 0
   assert "ls /tmp"
+  assert "ls /tmp" "it can contain a description as well"
 }
 
 it_should_show_correct_duration() {
@@ -57,34 +58,41 @@ it_should_support_defer() {
   defer "echo 'I will be executed first'"
 
   assert "test -e out"
-  assert 0 0
+  assert_eq 0 0
 }
 
-it_should_match_exit_code() {
+it_should_compare_exit_code() {
   # check return code or other integers
   true
-  assert $? 0
+  assert_eq $? 0
 
   false
-  assert $? 1
+  assert_eq $? 1
 }
 
-it_should_match_string() {
+it_should_compare_string() {
   # match strings
-  assert "foo" "foo"
+  assert_eq "foo" "foo"
 
   foo="$(echo 'hallo' | tr 'l' 'x')"
-  assert "${foo}" "haxxo"
+  assert_eq "${foo}" "haxxo"
 }
 
-it_should_match_string_with_description() {
+it_should_compare_string_with_description() {
   # pass an optional description as a third argument ... helpful when a test function has many asserts
-  assert "$(echo 'hallo' | tr 'l' 'x')" "haxxo" "transforming string should work"
+  assert_eq "$(echo 'hallo' | tr 'l' 'x')" "haxxo" "transforming string should work"
 }
 
 it_should_match_regexp() {
   # use 'assert_match' to match against an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
   assert_match "aaa:88909" "aaa:[0-9]{5}"
+}
+
+# it's possible to negate all assert statements by setting NEGATE=1
+it_should_negate_correctly() {
+  NEGATE=1 assert "ls /asdfagasdfadsga"
+  NEGATE=1 assert_eq 1 0
+  NEGATE=1 assert_match "hallo" "xx"
 }
 
 it_should_be_possible_to_skip_a_test() {
