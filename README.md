@@ -11,7 +11,11 @@ The basic usage is as follows:
 
     # all functions starting with 'it_' will be executed
     it_should_pass() {
-      assert 0 0
+      assert_eq 0 0
+      assert_eq "foo" "foo"
+      assert "ls /tmp"
+      assert_match "hallo" "ll"
+      NEGATE=1 assert_eq "xxx" "yyy"
     }
 
     it_should_fail() {
