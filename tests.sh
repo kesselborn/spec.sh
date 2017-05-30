@@ -40,9 +40,9 @@ after_all() {
 
 # all functions starting with 'it_' will be executed in an unspecified order
 it_should_execute_command() {
-  # assert with one argument will execute the string and pass if the result is 0
-  assert "ls /tmp"
-  assert "ls /tmp" "it can contain a description as well"
+  # assert_true with one argument will execute the string and pass if the result is 0
+  assert_true "ls /tmp"
+  assert_true "ls /tmp" "it can contain a description as well"
 }
 
 it_should_show_correct_duration() {
@@ -57,7 +57,7 @@ it_should_support_defer() {
   defer "echo 'I will be executed second'"
   defer "echo 'I will be executed first'"
 
-  assert "test -e out"
+  assert_true "test -e out"
   assert_eq 0 0
 }
 
@@ -90,14 +90,19 @@ it_should_match_regexp() {
 
 # it's possible to negate all assert statements by setting NEGATE=1
 it_should_negate_correctly() {
-  NEGATE=1 assert "ls /asdfagasdfadsga"
-  NEGATE=1 assert_eq 1 0
-  NEGATE=1 assert_match "hallo" "xx"
+  assert_false "ls /asdfagasdfadsga"
+  assert_neq 1 0
+  assert_nmatch "hallo" "xx"
 }
 
 it_should_be_possible_to_skip_a_test() {
   # you can skip a test ... it will be marked as skipped in the test output
   SKIP_TEST "only works in January"
+}
+
+it_should_have_correct_number_of_failing_tests() {
+  ./failing-tests.sh
+  assert_eq "$?" "11"
 }
 
 # this always needs to be last ... if you pass a parameter, this will be the class name of your tests

@@ -12,18 +12,18 @@ it_should_support_defer_even_on_fails() {
   echo "hallo" > out
   defer rm out   # this will be executed when the test is finished or if any of the asserts fails
 
-  assert "test -e out"
+  assert_true "test -e out"
   assert_eq 0 1
 }
 
 
 it_should_assert_command() {
-  # assert with one argument will execute the string and pass if the result is 0
-  assert "ls /xxxtmp"
+  # assert_true with one argument will execute the string and pass if the result is 0
+  assert_true "ls /xxxtmp"
 }
 
 it_should_assert_command_with_description() {
-  assert "ls /xxxtmp" "assert with a description"
+  assert_true "ls /xxxtmp" "assert_true with a description"
 }
 
 it_should_reflect_exit_code() {
@@ -56,18 +56,18 @@ it_should_match_regexp() {
 }
 
 it_should_negate_assert_correctly() {
-  NEGATE=1 assert "ls /"
+  assert_false "ls /"
 }
 
 it_should_negate_assert_eq_correctly() {
-  NEGATE=1 assert_eq 1 1
+  assert_neq 1 1
 }
 
 it_should_negate_assert_match_correctly() {
-  NEGATE=1 assert_match "hallo" "ll"
+  assert_nmatch "hallo" "ll"
 }
 
-it_should_have_seven_failing_tests() {
+it_should_have_n_failing_tests() {
   assert_eq 1 2
   assert_eq 0 0
   echo "make sure it really has 11 failing tests!!!"

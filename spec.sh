@@ -72,11 +72,11 @@ assert_eq() {
   description=$3
 
   (set +x
-    description="${description}${description:+ (}'${1}' $(test -n "${NEGATE}" && echo "!=" || echo "==") '${2}'${description:+)}"
-    if [ "${1}" $(test -n "${NEGATE}" && echo "==" || echo "!=") "${2}" ]; then
+    description="${description}${description:+ (}'${1}' $(test -n "${__SPEC_SH_NEGATE}" && echo "!=" || echo "==") '${2}'${description:+)}"
+    if [ "${1}" $(test -n "${__SPEC_SH_NEGATE}" && echo "==" || echo "!=") "${2}" ]; then
       printf "${IS_TTY:+\033[1;37;41m}failed expectation:${IS_TTY:+\033[m} ${IS_TTY:+\033[1;38;40m}${description} ${IS_TTY:+\033[m}\n"
       printf "######################################## FAILED TEST: $(echo ${description})\n"
-      __execute_defers
+      __spec_sh_execute_defers
       exit 1
     else
       printf "######################################## PASSED TEST: %s\n" "$(echo ${description})"
@@ -84,10 +84,20 @@ assert_eq() {
   ) || exit 1
 }
 
-# assert "<command that should succeed>" ["<description>"]
-assert() {
+# assert_neq "<got>" "<expected>" ["<description>"]
+assert_neq() {
+  __SPEC_SH_NEGATE=1 assert_true "$@"
+}
+
+# assert_true "<command that should succeed>" ["<description>"]
+assert_true() {
   $1
   assert_eq $? 0 "${2:-expecting command '$1' to succeed}"
+}
+
+# assert_true "<command that should succeed>" ["<description>"]
+assert_false() {
+  __SPEC_SH_NEGATE=1 assert_true "$@"
 }
 
 # assert_match matches the first argument against an _extended_ regular expression, i.e.:
@@ -96,6 +106,13 @@ assert_match() {
   (set +o pipefail; printf "%s" "$1" | grep -E -m1 -o "$2" | head -n1 | grep -E "$2")
   assert_eq $? 0 "checking '$1' to match /$2/"
 }
+
+# assert_nmatch returns true, if a regexp does not match
+# assert_match "foooobar" "xxxxx"
+assert_nmatch() {
+  __SPEC_SH_NEGATE=1 assert_match "$@"
+}
+
 
 # defer will be executed whenever your test finishes or fails in the middle
 defer() {
@@ -120,7 +137,7 @@ run_tests() {
   test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
   test -z "${SHARD}" || { shard_mod="$(echo "${SHARD}" | cut -f1 -d+)"; shard_offset="$(echo "${SHARD}" | cut -f2 -d+)"; }
 
-  local timer=$(__start_timer total_duration)
+  local timer=$(__spec_sh_start_timer total_duration)
   cnt=0
   for f in $(printf "${functions}" | grep -o "before_all") \
            $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
@@ -128,9 +145,9 @@ run_tests() {
   do
     cnt=$(( $cnt + 1 ))
     test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -ne 0 && printf "skipping $f due to sharding settings\n" && continue; }
-    __run_test $f
+    __spec_sh_run_test $f
   done
-  duration=$(__stop_timer ${timer})
+  duration=$(__spec_sh_stop_timer ${timer})
 
   if [ ${failed_tests_cnt} -eq 0 ]; then
     (export LC_ALL=C; printf "PASS\nok	${1:-$(basename $0|sed 's/\.sh$//g')}	%.3fs\n" ${duration})
@@ -144,7 +161,7 @@ run_tests() {
 
 ######### "private" functions
 
-__execute_defers() {
+__spec_sh_execute_defers() {
   test -z "${__DEFERRED_CALLS}" && return
   local commands=$(echo "${__DEFERRED_CALLS}" | tr -s ';')
   local file=$(mktemp /tmp/.spec.sh.deferred_calls.XXXXXX)
@@ -156,16 +173,16 @@ __execute_defers() {
 }
 
 # timer function compatible with busybox shell: call in conjunction with 'stop timer':
-# timer=$(__start_timer <timer-name>)
+# timer=$(__spec_sh_start_timer <timer-name>)
 # <commands>
-# duration=$(__stop_timer ${timer})
-__start_timer() {
+# duration=$(__spec_sh_stop_timer ${timer})
+__spec_sh_start_timer() {
   local file=$(mktemp /tmp/.spec.sh.timerfifo.${1:-noname}.XXXXXX)
   (mkfifo ${file}.sync; time -p cat ${file}.sync) 2>&1 | grep real | sed 's/real *//' > ${file} &
   echo ${file}
 }
 
-__stop_timer() {
+__spec_sh_stop_timer() {
   local file=$1
   printf "" > ${file}.sync
   duration=$(cat ${file})
@@ -174,16 +191,16 @@ __stop_timer() {
 }
 
 # runs a test and creates appropiate output
-__run_test() {
+__spec_sh_run_test() {
   local function=$1
   local log=$(mktemp)
 
-  local timer=$(__start_timer $1)
+  local timer=$(__spec_sh_start_timer $1)
   printf "=== RUN ${function}\n"
-  test "${VERBOSE}" = "1" && ( set -x; ${function}; res=$?; set +x; __execute_defers; return $res ) 2>&1 | sed 's/^/	/g' |  tee -a ${log} \
-                          || ( set -x; ${function}; res=$?; set +x; __execute_defers; return $res ) 2>&1 | sed 's/^/	/g' >>        ${log}
+  test "${VERBOSE}" = "1" && ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/	/g' |  tee -a ${log} \
+                          || ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/	/g' >>        ${log}
   result=$?
-  duration=$(__stop_timer ${timer})
+  duration=$(__spec_sh_stop_timer ${timer})
 
   if [ ${result} -eq 0 ]; then
     (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration:0})

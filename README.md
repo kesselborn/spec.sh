@@ -13,13 +13,17 @@ The basic usage is as follows:
     it_should_pass() {
       assert_eq 0 0
       assert_eq "foo" "foo"
-      assert "ls /tmp"
+      assert_neq "x" "y"
+
+      assert_true "ls /tmp"
+      assert_false "ls /non-existant-dir"
+
       assert_match "hallo" "ll"
-      NEGATE=1 assert_eq "xxx" "yyy"
+      assert_nmatch "hallo" "xx"
     }
 
     it_should_fail() {
-      assert "ls /non-existant-dir"
+      assert_true "ls /non-existant-dir"
     }
 
     run_tests
