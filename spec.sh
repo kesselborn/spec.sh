@@ -116,7 +116,7 @@ assert_nmatch() {
 
 # defer will be executed whenever your test finishes or fails in the middle
 defer() {
-  __DEFERRED_CALLS="$*; ${__DEFERRED_CALLS}"
+  __SPEC_SH_DEFERRED_CALLS="$*; ${__SPEC_SH_DEFERRED_CALLS}"
 }
 
 # use 'include <file>' to include a file with test functions
@@ -162,11 +162,11 @@ run_tests() {
 ######### "private" functions
 
 __spec_sh_execute_defers() {
-  test -z "${__DEFERRED_CALLS}" && return
-  local commands=$(echo "${__DEFERRED_CALLS}" | tr -s ';')
+  test -z "${__SPEC_SH_DEFERRED_CALLS}" && return
+  local commands=$(echo "${__SPEC_SH_DEFERRED_CALLS}" | tr -s ';')
   local file=$(mktemp /tmp/.spec.sh.deferred_calls.XXXXXX)
 
-  unset __DEFERRED_CALLS
+  unset __SPEC_SH_DEFERRED_CALLS
   printf -- "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% executing defer commands: 'eval \"${commands}\" &> ${file}'\n"
   test -n "${commands}" && eval "${commands}" &> ${file} || printf "defer errored (defer errors are ignored in test error count):\n$(cat ${file})\n"
   rm ${file}
