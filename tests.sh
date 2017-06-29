@@ -1,27 +1,5 @@
 #!/bin/sh
 
-# if you just want to execute some specific tests, set the TESTS env var to an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
-#
-#     # execute tests that matches exactly "it_should_match_string" or match the substring "execute_external_tests"
-#     TESTS="(^it_should_match_string$|execute_external_tests)" ./tests.sh
-#
-#     # execute all tests that contain the word "string" in their name
-#     TESTS="string" ./tests.sh
-#
-# usually, test output is logged to a file, if you additionally want verbose output, set env var VERBOSE:
-#
-#     VERBOSE=1 ./tests.sh
-#
-# if you want to abort all tests when one test fails, set FAIL_FAST:
-#
-#     FAIL_FAST=1 ./tests.sh
-#
-# if you want to omit ansi color output, set NO_ANSI_COLOR:
-#
-#     NO_ANSI_COLOR=1 ./tests.sh
-#
-
-
 source spec.sh
 include external-test.sh
 
@@ -102,7 +80,8 @@ it_should_be_possible_to_skip_a_test() {
 
 it_should_have_correct_number_of_failing_tests() {
   ./failing-tests.sh
-  assert_eq "$?" "11"
+  assert_eq "$?" "10"
+  assert_false "test -e out"
 }
 
 # this always needs to be last ... if you pass a parameter, this will be the class name of your tests

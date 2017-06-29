@@ -1,0 +1,178 @@
+#!/bin/sh -e
+input_files=${*:?no input files, usage: $0 junit-report1.xml junit-report2.xml ...}
+cat<<EOF
+<html>
+<head>
+  <script id="junit-report" type="xml/xmldata"><reports>$(for f in ${input_files}; do cat $f|grep -v '<?xml';done)</reports></script>
+  <meta charset="UTF-8">
+  <script>
+  // minified https://github.com/honza/140medley/blob/master/140medley.js (just what is needed)
+  var t=function(a,b ){return function(c,d ){return a.replace(/#{([^}]*)}/g,function(a,e ){return Function("x","with(x)return "+e ).call(c,d ||b ||{})})}};var p=function(a,b,c,d ){c=c||document;d=c[b="on"+b ];a=c[b]=function(e){d=d&&d(e=e||c.event );return(a=a&&b(e))?b :d;};c=this;};var m=function(a,b,c ){b=document;c=b.createElement("p");c.innerHTML=a;a=b.createDocumentFragment();while(b=c.firstChild ){a.appendChild(b);}return a;};var \$=function(a,b ){a=a.match(/^(\W)?(.*)/);return(b ||document )["getElement"+(a[1]?a[1]=="#"?"ById":"sByClassName":"sByTagName")](a[2])};
+  </script>
+  <script>
+     document.addEventListener("DOMContentLoaded", function(event) {
+       var txt = document.getElementById('junit-report').innerHTML;
+       var xmlDoc;
+
+       if (window.DOMParser) {
+         parser=new DOMParser();
+         xmlDoc=parser.parseFromString(txt,"text/xml");
+       } else {
+         xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+         xmlDoc.async=false;
+         xmlDoc.loadXML(txt);
+       }
+
+       var testsuites = \$('testsuite', xmlDoc);
+       for(i=0; i<testsuites.length; i++) {
+         var testsuite = testsuites[i];
+         var testSuiteData = {
+           id: 'testsuite-'+i,
+           tests: testsuite.getAttribute('tests'),
+           failures: testsuite.getAttribute('failures'),
+           time: testsuite.getAttribute('time'),
+           name: testsuite.getAttribute('name').replace(/[_-]/g, " "),
+           line: testsuite.getAttribute('line')
+         };
+
+         var template = t(
+             "<div id='#{this.id}' class='testsuite testsuite-#{this.failures > 0 ? 'failure' : 'ok'}'>"+
+               "<div class='time'>"+
+                 "<div class='skipped'><span>#{this.time}s<\/span><\/div>"+
+                 "<div class='failure'><span>#{this.time}s<\/span><\/div>"+
+                 "<div class='ok'><span>#{this.time}s<\/span><\/div><\/div>"+
+               "<div class='name'>#{this.name}<\/div>"+
+               "<div class='summary'>total: 14 | ok: 50 | failures: 14 | skipped: 36<\/div>"+
+               "<div class='line'><\/div>"+
+               "<div id='#{this.id}-testcases' class='testcases'><\/div>"+
+             "<\/div>");
+
+         var testsuiteElement = document.body.appendChild(m(template(testSuiteData)));
+
+         var testcases = \$('testcase', testsuite);
+         var skipped = 0;
+         for(j=0; j<testcases.length; j++) {
+           var testcase = testcases[j];
+
+           var data = {
+             id: 'testsuite-'+i+'-testcase-'+j,
+             classname: testcase.getAttribute('classname').replace(/[_-]/g, " "),
+             name: testcase.getAttribute('name').replace(/[_-]/g, " "),
+             time: testcase.getAttribute('time'),
+             failure: \$('failure', testcase),
+             skipped: \$('skipped', testcase)
+           };
+
+           var template = t(
+           "<div id='#{this.id}' onclick='var e = this.getElementsByClassName(\"failure-msg\"); if(e.length>0) { e[0].getAttribute(\"style\") == \"display: block\" ? e[0].setAttribute(\"style\", \"display: none\") : e[0].setAttribute(\"style\", \"display: block\") };' class='testcase testcase-#{this.failure.length > 0 ? 'failure' : (this.skipped.length > 0 ? 'skipped' : 'ok')}'>"+
+                 "<div class='time'>#{this.skipped.length > 0 ? 'skipped' : this.time+'s'}<\/div>"+
+                 "<div class='name'>#{this.name}<br/><span class='classname'>#{this.classname}<\/span><\/div>"+
+               "<\/div>");
+
+           testcaseElement = m(template(data));
+           if(data.failure.length > 0) {
+             testcaseElement.lastChild.appendChild(m("<div class='failure-details-toggle'>details<\/div><div class='failure-msg'><pre>"+convertAnsiColors(data.failure[0])+"<\/pre><\/div>"));
+           }
+           if(data.skipped.length > 0) {
+             skipped++;
+             testcaseElement.lastChild.appendChild(m("<div class='failure-details-toggle'>details<\/div><div class='failure-msg'><pre>"+data.skipped[0].getAttribute("message") || "no description given"+"<\/pre><\/div>"));
+           }
+           //\$('#testsuite-'+i+'-testcases').appendChild(testcaseElement);
+           \$('#testsuite-'+i+'-testcases').appendChild(testcaseElement);
+         }
+
+
+         \$('.summary', \$('#testsuite-'+i))[0].innerHTML = "total: "+testSuiteData.tests + " | ok: "+ (testSuiteData.tests - skipped - testSuiteData.failures) +" | failures: " + testSuiteData.failures + " | skipped: " + skipped;
+
+         var failed = Math.round(testSuiteData.failures * 100 / testSuiteData.tests);
+         var ok = Math.round((testSuiteData.tests - skipped - testSuiteData.failures) * 100 / testSuiteData.tests);
+         var skipped = Math.round(skipped * 100 / testSuiteData.tests);
+
+         \$('.skipped', \$('#testsuite-'+i))[0].style.width = 100 + "%";
+         \$('.failure', \$('#testsuite-'+i))[0].style.width = (failed + ok) + "%";
+         \$('.ok', \$('#testsuite-'+i))[0].style.width = ok + "%";
+       }
+       document.getElementById('junit-report').remove();
+     });
+
+     function convertAnsiColors(s) {
+     var reAnsiStart = /�\[([0-9]);([0-9][0-9]);([0-9][0-9])m/g;
+     var reAnsiEnd = /�\[m/g;
+     return s.textContent
+       .replace(reAnsiStart, '<span class="ansi-weight-\$1 ansi-fg-\$2 ansi-bg-\$3">')
+       .replace(reAnsiEnd, '<\/span>')
+     }
+
+     function toggleOkTestsVisibility() {
+       var okTests = \$('.testcase-ok');
+       var style = \$('#show-ok-tests-checkbox').checked ? 'inherit' : 'none';
+       for(i in okTests) {
+         if(okTests[i].style) { okTests[i].style.display = style; };
+       }
+     }
+  </script>
+  <style>
+  body, html { box-sizing: border-box; background-color: #FFF; color: #111111; font-family: -apple-system, 'Roboto', avenir, roboto, noto, ubuntu, 'helvetica neue', helvetica, arial, sans-serif; }
+  .ansi-weight-0 {font-weight:normal;}
+  .ansi-weight-1 {font-weight:bold;}
+
+  .black-fg  ,.ansi-fg-30 {color: #111111;}
+  .red-fg    ,.ansi-fg-31 {color: #FF4136;}
+  .green-fg  ,.ansi-fg-32 {color: #2ECC40;}
+  .yellow-fg ,.ansi-fg-33 {color: #FFDC00;}
+  .blue-fg   ,.ansi-fg-34 {color: #0074D9;}
+  .orange-fg ,.ansi-fg-35 {color: #85144b;}
+  .teal-fg   ,.ansi-fg-36 {color: #39CCCC;}
+  .white-fg  ,.ansi-fg-37 {color: #FF4136;}
+
+  pre { white-space: pre-wrap; }
+  .test-container              {display: flex; flex-direction: column; margin: 3em 6em 0em 6em; max-width: 1024px;}
+  .testsuite                   {margin-top: 3em; width: 1024 }
+  .testsuite > .name, .testsuite > .summary { display: inline-block; height: 2em; padding: 1em 1em 0 0; }
+  .testsuite > .summary { float: right; padding-top: 2em; }
+
+  .testsuite> .time            { display: inline-block; height: 2em; position: relative; width: 9em; margin: 0em 1em 0em 6em; }
+  .testsuite> .time div        { font-weight: bold; height: 3em; position: absolute; white-space: nowrap; overflow: hidden; }
+  .testsuite> .time div span   { width: 100%; padding: 1em 1em 1em 3em; position: absolute; }
+  .testsuite> .time > .ok      {background-color: rgba(234,250,236,1.0);  color: hsla(127, 63%, 15%, 1.0); }
+  .testsuite> .time > .failure {background-color: rgba(255,236,235,1.0);  color: hsla(3, 100%, 25%, 1.0); }
+  .testsuite> .time > .skipped {background-color: rgba(255,247,204, 1.0); color: #B39700; }
+
+  .testsuite         > .name {font-weight: bold; font-size: x-large;}
+  .line {max-width: 1024px; margin: 0.8em 0 1.4em 0; margin-left: 6em; border-bottom: 2px solid #111111;}
+
+  .testcase          {max-width: 1024px; margin-bottom: 0.5em; margin-left: 6em; }
+  .testcase div      {display: inline-block; height: 2em; padding: 1em 1em 0 1em; }
+  .testcase:hover    {background-color: #FAFAFA; }
+  .testcase-failure  {cursor: pointer; }
+  .testcase .failure-details-toggle       {font-size: xx-small; font-variant: small-caps; display: none; float: right; padding: 2em; }
+  .testcase:hover .failure-details-toggle {display: inline-block; float: right; }
+
+  .testcase  .failure-msg {background-color: #FAFAFA; height: auto; display: none; padding: 1em 2em 1em 2em; }
+  .testcase-ok            {display: none; }
+  .testcase-ok      .time {background-color: rgba(46,204,64,0.1); color: hsla(127, 63%, 15%, 1.0); font-weight: bold; width: 7em; text-align: center; }
+  .testcase-failure .time {background-color: rgba(255,65,54,0.1); color: hsla(3, 100%, 25%, 1.0); font-weight: bold; width: 7em; text-align: center; }
+  .testcase-skipped .time {background-color: rgba(255, 215, 0, 0.2); color: #B39700; font-weight: bold; width: 7em; text-align: center; }
+  .testcase    .classname {display: none; font-size: xx-small; font-variant:small-caps;}
+
+  .white-bg  ,.ansi-bg-40 {background-color: #FFFFFF;}
+  .red-bg    ,.ansi-bg-41 {background-color: rgba(255,65,54,0.1);}
+  .green-bg  ,.ansi-bg-42 {background-color: #2ECC40;}
+  .yellow-bg ,.ansi-bg-43 {background-color: #FFDC00;}
+  .blue-bg   ,.ansi-bg-44 {background-color: #0074D9;}
+  .orange-bg ,.ansi-bg-45 {background-color: #85144b;}
+  .teal-bg   ,.ansi-bg-46 {background-color: #39CCCC;}
+  .black-bg  ,.ansi-bg-47 {background-color: #111111;}
+  </style>
+  <title>Test results</title>
+  <link rel="icon" type="image/png" href="https://emojipedia-us.s3.amazonaws.com/cache/4d/d9/4dd9122837bcb2f38aeb67981ca8c6fd.png">
+</head>
+<body>
+  <div class="test-container">
+    <h1>Test results</h1>
+    <label>
+      <input id="show-ok-tests-checkbox" name="checkbox" onchange="toggleOkTestsVisibility()" type="checkbox" value="show-ok-tests">Show tests that passed
+    </label>
+  </div>
+</body>
+</html>

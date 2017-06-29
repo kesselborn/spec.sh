@@ -86,7 +86,7 @@ assert_eq() {
 
 # assert_neq "<got>" "<expected>" ["<description>"]
 assert_neq() {
-  __SPEC_SH_NEGATE=1 assert_true "$@"
+  __SPEC_SH_NEGATE=1 assert_eq "$@"
 }
 
 # assert_true "<command that should succeed>" ["<description>"]

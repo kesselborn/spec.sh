@@ -13,23 +13,25 @@ it_should_support_defer_even_on_fails() {
   defer rm out   # this will be executed when the test is finished or if any of the asserts fails
 
   assert_true "test -e out"
-  assert_eq 0 1
 }
 
-
+# 1
 it_should_assert_command() {
   # assert_true with one argument will execute the string and pass if the result is 0
   assert_true "ls /xxxtmp"
 }
 
+# 2
 it_should_assert_command_with_description() {
   assert_true "ls /xxxtmp" "assert_true with a description"
 }
 
-it_should_reflect_exit_code() {
-  return 3
+# 3
+it_should_negate_assert_match_correctly() {
+  assert_nmatch "hallo" "ll"
 }
 
+# 4
 it_should_compare_exit_code() {
   false
 
@@ -39,38 +41,39 @@ it_should_compare_exit_code() {
   assert_eq $? 2
 }
 
+# 5
 it_should_compare_string() {
   # match strings
   assert_eq "$(echo 'hallo' | tr 'l' 'x')" "haggo"
 }
 
+# 6
 it_should_compare_string_with_description() {
   # pass an optional description as a third argument ... helpful when on test has many asserts
   assert_eq "$(echo 'hallo' | tr 'l' 'x')" "haggo" "transforming string should work"
 }
 
+# 7
 it_should_match_regexp() {
   sleep 0.3
   # use 'assert_match' to match against an _extended_ regexp (https://www.gnu.org/software/sed/manual/html_node/Extended-regexps.html)
   assert_match "aaa:88X09" "aaa:[0-9]{5}"
 }
 
+# 8
 it_should_negate_assert_correctly() {
   assert_false "ls /"
 }
 
+# 9
 it_should_negate_assert_eq_correctly() {
   assert_neq 1 1
 }
 
-it_should_negate_assert_match_correctly() {
-  assert_nmatch "hallo" "ll"
+# 10
+it_should_reflect_exit_code() {
+  return 3
 }
 
-it_should_have_n_failing_tests() {
-  assert_eq 1 2
-  assert_eq 0 0
-  echo "make sure it really has 11 failing tests!!!"
-}
 
 run_tests
