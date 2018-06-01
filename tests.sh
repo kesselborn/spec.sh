@@ -32,10 +32,12 @@ it_should_show_correct_duration() {
 it_should_support_defer() {
   echo "hallo" > out
   defer "rm out"   # this will be executed when the test is finished or if any of the asserts fails
-  defer "echo 'I will be executed second'"
-  defer "echo 'I will be executed first'"
+
+  echo "du" > out2
+  defer "rm out2"   # this will be executed when the test is finished or if any of the asserts fails
 
   assert_true "test -e out"
+  assert_true "test -e out2"
   assert_eq 0 0
 }
 
@@ -66,7 +68,6 @@ it_should_match_regexp() {
   assert_match "aaa:88909" "aaa:[0-9]{5}"
 }
 
-# it's possible to negate all assert statements by setting NEGATE=1
 it_should_negate_correctly() {
   assert_false "ls /asdfagasdfadsga"
   assert_neq 1 0

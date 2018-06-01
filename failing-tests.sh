@@ -62,7 +62,7 @@ it_should_match_regexp() {
 
 # 8
 it_should_negate_assert_correctly() {
-  assert_false "ls /"
+  assert_false "ls /" "this test should fail"
 }
 
 # 9
