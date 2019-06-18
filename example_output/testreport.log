@@ -17,7 +17,7 @@
 === RUN it_should_negate_correctly
 --- PASS: it_should_negate_correctly (0.01s)
 === RUN it_should_be_possible_to_skip_a_test
-	skipping test: only works in January
+    skipping test: only works in January
 --- SKIP: it_should_be_possible_to_skip_a_test (0.00s)
 === RUN it_should_have_correct_number_of_failing_tests
 --- PASS: it_should_have_correct_number_of_failing_tests (0.75s)

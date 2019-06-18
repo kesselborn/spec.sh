@@ -2,7 +2,7 @@
 <testsuites>
 	<testsuite tests="13" failures="0" time="1.360" name="passing-tests">
 		<properties>
-			<property name="go.version" value="go1.8.3"></property>
+			<property name="go.version" value="go1.12.1"></property>
 		</properties>
 		<testcase classname="passing-tests" name="before_all" time="0.000"></testcase>
 		<testcase classname="passing-tests" name="it_should_execute_command" time="0.010"></testcase>
@@ -14,7 +14,7 @@
 		<testcase classname="passing-tests" name="it_should_match_regexp" time="0.000"></testcase>
 		<testcase classname="passing-tests" name="it_should_negate_correctly" time="0.010"></testcase>
 		<testcase classname="passing-tests" name="it_should_be_possible_to_skip_a_test" time="0.000">
-			<skipped message="skipping test: only works in January"></skipped>
+			<skipped message="    skipping test: only works in January"></skipped>
 		</testcase>
 		<testcase classname="passing-tests" name="it_should_have_correct_number_of_failing_tests" time="0.750"></testcase>
 		<testcase classname="passing-tests" name="it_should_execute_external_tests" time="0.000"></testcase>

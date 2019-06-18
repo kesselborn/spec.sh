@@ -197,8 +197,8 @@ __spec_sh_run_test() {
 
   local timer=$(__spec_sh_start_timer $1)
   printf "=== RUN ${function}\n"
-  test "${VERBOSE}" = "1" && ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/	/g' |  tee -a ${log} \
-                          || ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/	/g' >>        ${log}
+  test "${VERBOSE}" = "1" && ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/    /g' |  tee -a ${log} \
+                          || ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/    /g' >>        ${log}
   result=$?
   duration=$(__spec_sh_stop_timer ${timer})
 
