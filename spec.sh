@@ -69,10 +69,10 @@ SKIP_TEST() {
 
 # assert_eq "<got>" "<expected>" ["<description>"]
 assert_eq() {
-  description=$3
+  local description=$3
 
   (set +x
-    description="${description}${description:+ (}'${1}' $(test -n "${__SPEC_SH_NEGATE}" && echo "!=" || echo "==") '${2}'${description:+)}"
+    local description="${description}${description:+ (}'${1}' $(test -n "${__SPEC_SH_NEGATE}" && echo "!=" || echo "==") '${2}'${description:+)}"
     if [ "${1}" $(test -n "${__SPEC_SH_NEGATE}" && echo "==" || echo "!=") "${2}" ]; then
       printf "${IS_TTY:+\033[1;37;41m}failed expectation:${IS_TTY:+\033[m} ${IS_TTY:+\033[1;38;40m}${description} ${IS_TTY:+\033[m}\n"
       printf "######################################## FAILED TEST: $(echo ${description})\n"
@@ -135,19 +135,19 @@ run_tests() {
 
   local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
   test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
-  test -z "${SHARD}" || { shard_mod="$(echo "${SHARD}" | cut -f1 -d+)"; shard_offset="$(echo "${SHARD}" | cut -f2 -d+)"; }
+  test -z "${SHARD}" || { local shard_mod="$(echo "${SHARD}" | cut -f1 -d+)"; local shard_offset="$(echo "${SHARD}" | cut -f2 -d+)"; }
 
   local timer=$(__spec_sh_start_timer total_duration)
-  cnt=0
+  local cnt=0
   for f in $(printf "${functions}" | grep -o "before_all") \
            $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
            $(printf "${functions}" | grep -o "after_all")
   do
-    cnt=$(( $cnt + 1 ))
+    local cnt=$(( $cnt + 1 ))
     test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -ne 0 && printf "skipping $f due to sharding settings\n" && continue; }
     __spec_sh_run_test $f
   done
-  duration=$(__spec_sh_stop_timer ${timer})
+  local duration=$(__spec_sh_stop_timer ${timer})
 
   if [ ${failed_tests_cnt} -eq 0 ]; then
     (export LC_ALL=C; printf "PASS\nok	${1:-$(basename $0|sed 's/\.sh$//g')}	%.3fs\n" ${duration})
@@ -185,9 +185,9 @@ __spec_sh_start_timer() {
 __spec_sh_stop_timer() {
   local file=$1
   printf "" > ${file}.sync
-  duration=$(cat ${file})
+  local duration=$(cat ${file})
   rm ${file}.sync ${file}
-  echo ${duration}
+  echo ${duration:-0.0}
 }
 
 # runs a test and creates appropiate output
@@ -199,8 +199,8 @@ __spec_sh_run_test() {
   printf "=== RUN ${function}\n"
   test "${VERBOSE}" = "1" && ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/    /g' |  tee -a ${log} \
                           || ( set -x; ${function}; res=$?; set +x; __spec_sh_execute_defers; return $res ) 2>&1 | sed 's/^/    /g' >>        ${log}
-  result=$?
-  duration=$(__spec_sh_stop_timer ${timer})
+  local result=$?
+  local duration=$(__spec_sh_stop_timer ${timer})
 
   if [ ${result} -eq 0 ]; then
     (export LC_ALL=C; printf -- "--- PASS: %s (%.2fs)\n" ${function} ${duration:0})
@@ -216,4 +216,3 @@ __spec_sh_run_test() {
   fi
   rm ${log}
 }
-
