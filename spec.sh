@@ -44,6 +44,8 @@
 #       # rerun all tests that failed (don't redirect into the same log file -- this will rerun all tests)
 #       RERUN_FAILED_FROM=log1 ./tests.sh > log2
 #
+#  - CONCURRENT=X:             run X tests in parallel
+#
 #  - SHARD:                    runs only every nth test by using mod + offset logic (e.g. SHARD=2+0 ./tests.sh & SHARD=2+1 ./tests.sh)
 #
 #        SHARD=3+0 ./tests.sh &   \
@@ -131,6 +133,29 @@ include() {
 # Call run tests at the end of your test file. The name of the testsuite will either
 # be the name of the test script or the parameter you pass to 'run_tests'
 run_tests() {
+  if [ -n "${CONCURRENT}" ]
+  then
+    local _CONCURRENT=${CONCURRENT}
+    __spec_sh_run_test before_all
+
+    local MOD=$((CONCURRENT - 1))
+    while [ $MOD -ge 0 ]
+    do
+      NO_HOOKS=1 CONCURRENT= SHARD=${_CONCURRENT}+${MOD} run_tests &
+      local pids="${pids} $!"
+      MOD=$((MOD - 1))
+    done
+
+    local errors_total=0
+    for pid in ${pids}
+    do
+      wait ${pid}
+      errors_total=$((errors_total+$?))
+    done
+    __spec_sh_run_test after_all
+    return ${errors_total}
+  fi
+
   if grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES}|sort|uniq -c|grep -v " .*1"; then echo "duplicate test names forbidden"; exit; fi
 
   local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
@@ -139,9 +164,9 @@ run_tests() {
 
   local timer=$(__spec_sh_start_timer total_duration)
   local cnt=0
-  for f in $(printf "${functions}" | grep -o "before_all") \
+  for f in $(printf "${functions}" | grep -o "${NO_HOOKS:+XXXXXXXXXXXXXXXXXXXX}before_all") \
            $(printf "${functions}" | grep "^it_" | grep -E "${TESTS:-.}") \
-           $(printf "${functions}" | grep -o "after_all")
+           $(printf "${functions}" | grep -o "${NO_HOOKS:+XXXXXXXXXXXXXXXXXXXX}after_all")
   do
     local cnt=$(( $cnt + 1 ))
     test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -ne 0 && printf "skipping $f due to sharding settings\n" && continue; }
