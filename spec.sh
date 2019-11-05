@@ -169,7 +169,7 @@ run_tests() {
            $(printf "${functions}" | grep -o "${NO_HOOKS:+XXXXXXXXXXXXXXXXXXXX}after_all")
   do
     local cnt=$(( $cnt + 1 ))
-    test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -ne 0 && printf "skipping $f due to sharding settings\n" && continue; }
+    test -z "${SHARD}" || { printf "${f}" | grep "^it_" >/dev/null && test $(( (${cnt} + ${shard_offset}) % ${shard_mod} )) -ne 0 && (test -n "${NO_HOOKS}" || printf "skipping $f due to sharding settings\n" ) && continue; }
     __spec_sh_run_test $f
   done
   local duration=$(__spec_sh_stop_timer ${timer})
