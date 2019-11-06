@@ -92,6 +92,14 @@ Have a look at [some sample output](#sample-output)
       SHARD=3+2 ./tests.sh & \
     ```
 
+- `CONCURRENT`: run X tests concurrently in the same process (as opposed to using `SHARD`, which executes tests in separate processes)
+
+  ```bash
+  CONCURRENT=3 ./tests.sh  # always run 3 tests concurrently
+  ```
+
+  
+
 # junit output
 
 Running tests on a system that can consume junit output? Convert the test output to junit output follows:
