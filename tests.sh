@@ -16,7 +16,7 @@ after_all() {
   true
 }
 
-# all functions starting with 'it_' will be executed in an unspecified order
+# all functions starting with 'it_' will be executed in the order they were defined
 it_should_execute_command() {
   # assert_true with one argument will execute the string and pass if the result is 0
   assert_true "ls /tmp"
