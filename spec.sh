@@ -135,30 +135,14 @@ include() {
 run_tests() {
   if [ -n "${CONCURRENT}" ]
   then
-    local _CONCURRENT=${CONCURRENT}
-    __spec_sh_run_test before_all
-
-    local MOD=$((CONCURRENT - 1))
-    while [ $MOD -ge 0 ]
-    do
-      NO_HOOKS=1 CONCURRENT= SHARD=${_CONCURRENT}+${MOD} run_tests &
-      local pids="${pids} $!"
-      MOD=$((MOD - 1))
-    done
-
-    local errors_total=0
-    for pid in ${pids}
-    do
-      wait ${pid}
-      errors_total=$((errors_total+$?))
-    done
-    __spec_sh_run_test after_all
-    return ${errors_total}
+    __run_concurrently "$@"
+    return $?
   fi
 
-  if grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES}|sort|uniq -c|grep -v " .*1"; then echo "duplicate test names forbidden"; exit; fi
+  local test_files="$0 ${__SPEC_SH_INCLUDES}"
+  if grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" ${test_files}|sort|uniq -c|grep -v " .*1"; then echo "duplicate test names forbidden"; exit; fi
 
-  local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" $0 ${__SPEC_SH_INCLUDES})
+  local functions=$(grep -Eho "(^it_[a-zA-Z_0-9]*|^before_all|^after_all)" ${test_files})
   test -z "${RERUN_FAILED_FROM}" || TESTS="$(echo $(grep -- "^--- FAIL:" ${RERUN_FAILED_FROM} | cut -f3 -d" ") | tr " " "|")"
   test -z "${SHARD}" || { local shard_mod="$(echo "${SHARD}" | cut -f1 -d+)"; local shard_offset="$(echo "${SHARD}" | cut -f2 -d+)"; }
 
@@ -174,17 +158,67 @@ run_tests() {
   done
   local duration=$(__spec_sh_stop_timer ${timer})
 
-  if [ ${failed_tests_cnt} -eq 0 ]; then
-    (export LC_ALL=C; printf "PASS\nok	${1:-$(basename $0|sed 's/\.sh$//g')}	%.3fs\n" ${duration})
-  else
-    (export LC_ALL=C; printf "FAIL\nexit status %d\nFAIL	${1:-$(basename $0|sed 's/\.sh$//g')}	%.3fs\n" ${failed_tests_cnt} ${duration})
-  fi
+  __print_result "${failed_tests_cnt}" "${1:-$(basename $0|sed 's/\.sh$//g')}" "${duration}"
 
   exit ${failed_tests_cnt}
 }
 
-
 ######### "private" functions
+__print_result() {
+  local num_errors=$1
+  local test_suite_name=$2
+  local duration=$3
+
+  test ${num_errors} -eq 0 && local fmts="PASS\nok %s %3.fs\n" || local fmts="FAIL\nexit status "${num_errors}"\nFAIL %s %.3fs\n"
+
+  (export LC_ALL=C; printf "${fmts}" "${test_suite_name}" "${duration}")
+}
+
+__run_concurrently() {
+    local test_files="$0 ${__SPEC_SH_INCLUDES}"
+    local random_name=$(mktemp /tmp/.spec.sh.concurrent_log.XXXXXX)
+    local _CONCURRENT=${CONCURRENT}
+
+    if grep -Eho "^before_all" ${test_files} &>/dev/null
+    then
+      local timer=$(__spec_sh_start_timer total_duration)
+      __spec_sh_run_test before_all
+      local num_errors=$?
+      local duration=$(__spec_sh_stop_timer ${timer})
+      __print_result "${num_errors}" "startup" "${duration}"
+    fi
+    printf "NOTE: in concurrent mode, logs will show up once all test of a shard are finished, i.e. it will take a while until you see logs\n" >&2
+
+    local MOD=$((CONCURRENT - 1))
+    while [ $MOD -ge 0 ]
+    do
+      NO_HOOKS=1 CONCURRENT= SHARD=${_CONCURRENT}+${MOD} run_tests ${1:-$(basename $0|sed 's/\.sh$//g')}${_CONCURRENT}+${MOD}	2>&1 > ${random_name} &
+      local pid=$!
+      mv ${random_name} ${random_name}.${pid}
+      local pids="${pids} ${pid}"
+      MOD=$((MOD - 1))
+    done
+
+    local errors_total=0
+    for pid in ${pids}
+    do
+      wait ${pid}
+      errors_total=$((errors_total+$?))
+      cat ${random_name}.${pid}
+    done
+
+    if grep -Eho "^after_all" ${test_files} &>/dev/null
+    then
+      local timer=$(__spec_sh_start_timer total_duration)
+      __spec_sh_run_test after_all
+      local num_errors=$?
+      local duration=$(__spec_sh_stop_timer ${timer})
+      __print_result "${num_errors}" "cleanup" "${duration}"
+    fi
+
+    return ${errors_total}
+}
+
 
 __spec_sh_execute_defers() {
   test -z "${__SPEC_SH_DEFERRED_CALLS}" && return
@@ -219,6 +253,7 @@ __spec_sh_stop_timer() {
 __spec_sh_run_test() {
   local function=$1
   local log=$(mktemp)
+  local test_files="$0 ${__SPEC_SH_INCLUDES}"
 
   local timer=$(__spec_sh_start_timer $1)
   printf "=== RUN ${function}\n"
@@ -234,7 +269,7 @@ __spec_sh_run_test() {
     (export LC_ALL=C; printf -- "--- SKIP: %s (%.2fs)\n" ${function} ${duration:0})
   else
     test "${VERBOSE}" = "1" || cat ${log}
-    printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40m}%s${IS_TTY:+\033[m}\n" ${result} "$(grep -Hon "${function}" $0 ${__SPEC_SH_INCLUDES})"
+    printf "\terror code: %d\n\terror occured in ${IS_TTY:+\033[1;38;40m}%s${IS_TTY:+\033[m}\n" ${result} "$(grep -Hon "${function}" ${test_files})"
     let "failed_tests_cnt++"
     (export LC_ALL=C; printf -- "--- FAIL: %s (%.2fs)\n" ${function} ${duration:0})
     test "${function}" = "before_all" -o "$FAIL_FAST" = "1" && { after_all 2>/dev/null; exit 1; }
