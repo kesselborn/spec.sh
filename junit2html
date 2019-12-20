@@ -93,6 +93,7 @@ cat<<EOF
          \$('.ok', \$('#testsuite-'+i))[0].style.width = ok + "%";
        }
        document.getElementById('junit-report').remove();
+      document.querySelector('#show-ok-tests-checkbox').checked = false;
      });
 
      function convertAnsiColors(s) {

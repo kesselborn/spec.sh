@@ -169,7 +169,7 @@ __print_result() {
   local test_suite_name=$2
   local duration=$3
 
-  test ${num_errors} -eq 0 && local fmts="PASS\nok %s %3.fs\n" || local fmts="FAIL\nexit status "${num_errors}"\nFAIL %s %.3fs\n"
+  test ${num_errors} -eq 0 && local fmts="PASS\nok %s %.3fs\n" || local fmts="FAIL\nexit status "${num_errors}"\nFAIL %s %.3fs\n"
 
   (export LC_ALL=C; printf "${fmts}" "${test_suite_name}" "${duration}")
 }
